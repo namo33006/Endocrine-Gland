@@ -419,7 +419,17 @@
             }
         });
 
-        document.getElementById('reset-btn').addEventListener('click', initGame);
+        // ระบบยืนยัน 2 ชั้นก่อนสุ่มใหม่ (Double Confirm) ป้องกันการกดพลาดอย่างละเอียด
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            const firstCheck = confirm("คุณต้องการล้างกระดานและเริ่มเกมใหม่ทั้งหมดใช่หรือไม่?");
+            if (firstCheck) {
+                const secondCheck = confirm("⚠️ การ์ดที่คุณต่อค้างไว้ทั้งหมดจะหายไปทันที ยืนยันที่จะเริ่มใหม่จริงๆ ใช่ไหม?");
+                if (secondCheck) {
+                    initGame();
+                }
+            }
+        });
+
         window.onload = initGame;
     </script>
 </body>
