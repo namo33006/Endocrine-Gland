@@ -6,11 +6,13 @@
     <title>เกมโดมิโน่ต่อมไร้ท่อ (Endocrine Dominoes Chain)</title>
     <style>
         :root { --bg: #ecf0f1; --card-bg: #ffffff; --success: #2ecc71; --primary: #2c3e50; }
-        body { font-family: sans-serif; background-color: var(--bg); padding: 20px; text-align: center; }
+        body { font-family: sans-serif; background-color: var(--bg); padding: 20px; text-align: center; color: var(--primary); }
         .controls { margin-bottom: 20px; }
-        .timer { font-size: 28px; font-weight: bold; margin: 10px; }
+        .timer { font-size: 32px; font-weight: bold; margin: 10px; color: var(--primary); }
         .pool-zone, .chain-zone { background: var(--card-bg); border: 2px solid #ccc; padding: 15px; min-height: 100px; display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; border-radius: 10px; justify-content: center; }
-        .leaderboard-section { max-width: 500px; margin: 30px auto; background: var(--card-bg); padding: 20px; border-radius: 10px; }
+        .domino-card { background: #fff; border: 1px solid #999; padding: 10px; cursor: pointer; width: 140px; font-size: 11px; border-radius: 4px; }
+        .domino-card:hover { border-color: var(--success); }
+        .leaderboard-section { max-width: 400px; margin: 30px auto; background: var(--card-bg); padding: 20px; border-radius: 10px; border: 1px solid #ccc; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 10px; border-bottom: 1px solid #ddd; }
     </style>
@@ -21,22 +23,41 @@
     <div class="controls">
         <div class="timer" id="timer-display">00:00</div>
         <button id="reset-btn">🔄 เริ่มเกมใหม่</button>
-        <button id="check-btn" style="background:var(--success); color:white; border:none; padding:10px;">🔍 ตรวจสอบคำตอบ</button>
+        <button id="check-btn" style="background:var(--success); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">🔍 ตรวจสอบคำตอบ</button>
     </div>
 
     <div id="pool-zone" class="pool-zone"></div>
     <div id="chain-zone" class="chain-zone"></div>
-    <div id="status-bar" style="font-weight:bold;">วางการ์ดใบแรกเพื่อเริ่มจับเวลา</div>
+    <div id="status-bar" style="font-weight:bold;">วางการ์ดใบแรกในโซนด้านล่างเพื่อเริ่มจับเวลา</div>
 
     <div class="leaderboard-section">
         <h3>🏆 เวลาที่ดีที่สุดของคุณ <span style="font-size: 0.7em; color: gray;">(เครื่องนี้เครื่องเดียว)</span></h3>
         <table>
-            <thead><tr><th>อันดับ</th><th>สถิติเวลา</th></tr></thead>
-            <tbody id="leaderboard-body"></tbody>
+            <thead><tr><th>สถิติเวลาที่เร็วที่สุด</th></tr></thead>
+            <tbody id="leaderboard-body"><tr><td id="best-time-val">-</td></tr></tbody>
         </table>
     </div>
 
     <script>
+        const masterCards = [
+            { id: 1, left: "Adrenal Cortex", right: "Estrogen" }, { id: 17, left: "Ovary", right: "Calcitonin" },
+            { id: 3, left: "Thyroid Gland", right: "Minarocorticoid" }, { id: 4, left: "Adrenal Cortex", right: "Prolactin" },
+            { id: 5, left: "Anterior Pituitary", right: "Triiodothyronine" }, { id: 11, left: "Thyroid Gland", right: "LH" },
+            { id: 6, left: "Anterior Pituitary", right: "Melatonin" }, { id: 20, left: "Pineal Gland", right: "Glucagon" },
+            { id: 15, left: "Pancreas", right: "Nor Epinephrine" }, { id: 7, left: "Adrenal Medulla", right: "Secretin" },
+            { id: 2, left: "Small Intestine", right: "Erythropoietin" }, { id: 13, left: "Kidney", right: "HCG" },
+            { id: 26, left: "Placenta", right: "ACTH" }, { id: 12, left: "Anterior Pituitary", right: "Parathormone" },
+            { id: 24, left: "Parathyroid Gland", right: "Sex hormone" }, { id: 14, left: "Adrenal Cortex", right: "Thyroxin" },
+            { id: 27, left: "Thyroid Gland", right: "Thymosin" }, { id: 8, left: "Thymus", right: "Progesterone" },
+            { id: 21, left: "Ovary", right: "Glucocorticoid" }, { id: 18, left: "Adrenal Cortex", right: "Epinephrine" },
+            { id: 10, left: "Adrenal Medulla", right: "Renin" }, { id: 23, left: "Kidney", right: "Antidiuretic Hormone ADH" },
+            { id: 16, left: "Posterior Pituitary", right: "Gastrin" }, { id: 9, left: "Stomach", right: "TSH" },
+            { id: 22, left: "Anterior Pituitary", right: "Cortisol" }, { id: 31, left: "Adrenal Cortex", right: "Testosterone" },
+            { id: 28, left: "Testis", right: "Growth hormone" }, { id: 29, left: "Anterior Pituitary", right: "Insulin" },
+            { id: 19, left: "Pancreas", right: "FSH" }, { id: 25, left: "Anterior Pituitary", right: "Oxytocin" },
+            { id: 30, left: "Posterior Pituitary", right: "Aldosterone" }
+        ];
+
         let timerSeconds = 0, timerInterval = null, isTimerStarted = false;
 
         function formatTime(s) { return Math.floor(s / 60).toString().padStart(2, '0') + ":" + (s % 60).toString().padStart(2, '0'); }
@@ -51,39 +72,35 @@
             }
         }
 
-        // เริ่มเกมใหม่ (Double Confirm)
+        // เริ่มเกมใหม่
         document.getElementById('reset-btn').onclick = () => {
-            if (confirm("ล้างกระดานและเริ่มใหม่ทั้งหมดใช่หรือไม่?")) {
-                if (confirm("การ์ดที่เล่นค้างไว้จะหายไป ยืนยันอีกครั้ง?")) {
-                    location.reload();
-                }
-            }
+            if (confirm("ล้างกระดานและเริ่มใหม่ทั้งหมดใช่หรือไม่?")) location.reload();
         };
 
-        // ตรวจสอบคำตอบและบันทึกเวลาถ้าชนะ
+        // ตรวจสอบคำตอบ
         document.getElementById('check-btn').onclick = () => {
-            // สมมติว่าเมื่อตรวจแล้วชนะ (คุณสามารถใส่ Logic ตรวจสอบคำตอบของคุณที่นี่)
-            let isWin = true; 
-            if(isWin) {
+            // ใส่ Logic การตรวจคำตอบของคุณที่นี่
+            const isWin = confirm("ระบบตรวจพบว่าคุณต่อเสร็จสมบูรณ์ บันทึกเวลาเลยไหม?");
+            if (isWin) {
                 clearInterval(timerInterval);
-                let bestTime = parseInt(localStorage.getItem('best_time') || 9999);
-                if(timerSeconds < bestTime) {
+                let bestTime = localStorage.getItem('best_time');
+                if(!bestTime || timerSeconds < parseInt(bestTime)) {
                     localStorage.setItem('best_time', timerSeconds);
-                    alert("ยินดีด้วย! คุณทำเวลาใหม่ที่ดีที่สุดได้แล้ว: " + formatTime(timerSeconds));
+                    alert("ยินดีด้วย! คุณทำลายสถิติเวลาใหม่ได้แล้ว: " + formatTime(timerSeconds));
                 }
                 loadLeaderboard();
             }
         };
 
+        // โหลดเวลาที่ดีที่สุด
         function loadLeaderboard() {
             let bestTime = localStorage.getItem('best_time');
-            const tbody = document.getElementById('leaderboard-body');
             if(bestTime) {
-                tbody.innerHTML = `<tr><td>🥇</td><td>${formatTime(bestTime)}</td></tr>`;
+                document.getElementById('best-time-val').innerText = formatTime(bestTime);
             }
         }
 
-        // เริ่มจับเวลาเมื่อมีการคลิกที่โซนการ์ด
+        // เริ่มจับเวลาเมื่อมีการคลิกที่การ์ดใน Pool
         document.getElementById('pool-zone').onclick = () => { if(!isTimerStarted) startTimer(); };
 
         loadLeaderboard();
