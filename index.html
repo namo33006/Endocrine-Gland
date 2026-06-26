@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>เกมต่อการ์ดระบบต่อมไร้ท่อ v2 (Mobile Optimized)</title>
+    <title>เกมต่อการ์ดระบบต่อมไร้ท่อ v2 (Adaptive Screen)</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -17,244 +17,117 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
             margin: 0;
-            padding: 10px;
+            padding: 20px;
             color: var(--primary);
             -webkit-tap-highlight-color: transparent;
         }
-        header {
-            text-align: center;
-            margin-bottom: 12px;
-        }
-        h1 {
-            font-size: 1.3rem;
-            margin: 5px 0;
-            color: var(--primary);
-        }
-        header p {
-            font-size: 0.85rem;
-            margin: 0;
-        }
+        
+        /* ปรับสไตล์พื้นฐานให้แสดงผลดีในคอม/iPad */
+        header { text-align: center; margin-bottom: 20px; }
+        h1 { margin: 0 0 10px 0; color: var(--primary); font-size: 2rem; }
         .instructions {
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            max-width: 900px;
-            margin: 0 auto 12px auto;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            font-size: 12px;
-            line-height: 1.5;
+            background: white; padding: 15px; border-radius: 8px;
+            max-width: 900px; margin: 0 auto 20px auto;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 14px; line-height: 1.6;
         }
-        .controls {
-            text-align: center;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-        }
+        .controls { text-align: center; margin-bottom: 20px; }
         button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            font-size: 13px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            flex: 1;
-            max-width: 180px;
+            background-color: var(--primary); color: white; border: none;
+            padding: 10px 20px; font-size: 15px; border-radius: 5px;
+            cursor: pointer; transition: background 0.2s, transform 0.1s; margin: 5px;
         }
         button:hover { background-color: #34495e; }
-        button:active { transform: scale(0.95); }
+        button:active { transform: scale(0.98); }
         
-        .game-container {
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-        
-        .section-title {
-            font-weight: bold;
-            margin: 10px 0 5px 0;
-            font-size: 14px;
-        }
+        .game-container { max-width: 1300px; margin: 0 auto; }
+        .section-title { font-weight: bold; margin: 15px 0 5px 0; font-size: 16px; }
 
-        /* โซนคลังการ์ด: ปรับให้เลื่อนสไลด์แนวนอนในมือถือ ไม่ยาวลงมาล่าง */
+        /* การตั้งค่าเริ่มต้นสำหรับหน้าจอใหญ่ (คอมพิวเตอร์ / iPad) -> เรียงกระจายเต็มจอแบบเก่า */
         .pool-zone {
-            background: rgba(255,255,255,0.7);
-            border: 2px dashed #bdc3c7;
-            border-radius: 10px;
-            padding: 10px;
-            min-height: 80px;
-            display: flex;
-            flex-direction: row;
-            overflow-x: auto;
-            gap: 8px;
-            margin-bottom: 15px;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
+            background: rgba(255,255,255,0.7); border: 2px dashed #bdc3c7; border-radius: 10px;
+            padding: 15px; min-height: 120px; display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;
         }
-
-        .placement-actions {
-            text-align: center;
-            background: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            display: none;
-        }
-        .placement-actions span {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            color: var(--accent);
-        }
-        .placement-btn-group {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        .placement-btn-group button {
-            font-size: 12px;
-            padding: 6px 10px;
-            flex: 1;
-        }
-
-        /* โซนสายโซ่: บังคับให้อยู่ในแถวเดียวกันแล้วใช้ปัดนิ้วซ้ายขวาเพื่อดู */
         .chain-zone {
-            background: #ffffff;
-            border: 2px solid #34495e;
-            border-radius: 10px;
-            padding: 15px 10px;
-            min-height: 100px;
-            display: flex;
-            flex-direction: row;
-            overflow-x: auto;
-            align-items: center;
-            gap: 8px;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
+            background: #ffffff; border: 2px solid #34495e; border-radius: 10px;
+            padding: 25px 20px; min-height: 180px; display: flex; flex-wrap: wrap; gap: 12px;
+            align-items: center; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
         }
-
-        /* ปรับขนาดการ์ดโดมิโน่ให้กะทัดรัดขึ้น เหมาะกับนิ้วจิ้มในมือถือ */
         .domino-card {
-            background: var(--card-bg);
-            border: 2px solid #bdc3c7;
-            border-radius: 6px;
-            width: 130px;
-            height: 65px;
-            display: flex;
-            flex-shrink: 0;
-            cursor: pointer;
-            user-select: none;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.08);
-            position: relative;
+            background: var(--card-bg); border: 2px solid #bdc3c7; border-radius: 6px;
+            width: 175px; height: 75px; display: flex; flex-shrink: 0; cursor: pointer;
+            user-select: none; box-shadow: 0 4px 6px rgba(0,0,0,0.08); position: relative;
         }
-        .domino-card.selected {
-            border-color: var(--accent);
-            box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
-        }
-        .domino-card.correct {
-            border-color: var(--success);
-            background-color: #f2f9f4;
-        }
-        .domino-card.wrong-connection {
-            border-color: var(--accent);
-            background-color: #fdf2f2;
-        }
-
         .card-half {
-            width: 50%;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 10px;
-            font-weight: 600;
-            word-break: break-word;
-            line-height: 1.2;
+            width: 50%; padding: 6px; display: flex; align-items: center; justify-content: center;
+            text-align: center; font-size: 11px; font-weight: 600; word-break: break-word;
         }
-        .card-left {
-            border-right: 1px dashed #bdc3c7;
-            background-color: #fdfdfd;
-            color: #2c3e50;
-            border-top-left-radius: 4px;
-            border-bottom-left-radius: 4px;
-        }
-        .card-right {
-            background-color: #f7f9fa;
-            color: #c0392b;
-            border-top-right-radius: 4px;
-            border-bottom-right-radius: 4px;
-        }
-        
-        .card-number {
-            position: absolute;
-            top: -6px;
-            left: -6px;
-            background: #7f8c8d;
-            color: white;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            font-size: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            z-index: 2;
-        }
+        .arrow-container { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 18px; color: #7f8c8d; user-select: none; flex-shrink: 0; }
+        .arrow-error { color: var(--accent); font-size: 11px; font-weight: bold; margin-top: 2px; background: #fdf2f2; padding: 2px 4px; border-radius: 3px; border: 1px solid rgba(231, 76, 60, 0.2); white-space: nowrap; }
 
-        .arrow-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: #7f8c8d;
-            user-select: none;
-            flex-shrink: 0;
-        }
-        .arrow-error {
-            color: var(--accent);
-            font-size: 9px;
-            font-weight: bold;
-            margin-top: 1px;
-            background: #fdf2f2;
-            padding: 1px 3px;
-            border-radius: 3px;
-            white-space: nowrap;
-        }
-        
-        .status-bar {
-            text-align: center;
-            margin-top: 15px;
-            padding: 12px;
-            font-size: 13px;
-            font-weight: bold;
-            border-radius: 8px;
-            background: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        /* สไตล์เสริมสำหรับการ์ด */
+        .domino-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.12); }
+        .domino-card.selected { border-color: var(--accent); box-shadow: 0 0 10px rgba(231, 76, 60, 0.6); }
+        .domino-card.correct { border-color: var(--success); background-color: #f2f9f4; }
+        .domino-card.wrong-connection { border-color: var(--accent); background-color: #fdf2f2; }
+        .card-left { border-right: 1px dashed #bdc3c7; background-color: #fdfdfd; color: #2c3e50; border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+        .card-right { background-color: #f7f9fa; color: #c0392b; border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+        .card-number { position: absolute; top: -8px; left: -8px; background: #7f8c8d; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 2; }
+
+        .placement-actions { text-align: center; background: #fff; padding: 10px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: none; }
+        .placement-actions span { font-weight: bold; margin-right: 15px; color: var(--accent); }
+        .placement-btn-group { display: inline-block; }
+        .status-bar { text-align: center; margin-top: 25px; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 8px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); min-height: 24px; }
+
+        /* 📱 เปิดโหมดสไลด์แนวนอน เฉพาะเมื่อเล่นในหน้าจอมือถือ (ความกว้างจอน้อยกว่า 767px) */
+        @media (max-width: 767px) {
+            body { padding: 10px; }
+            h1 { font-size: 1.3rem; margin: 5px 0; }
+            header p { font-size: 0.85rem; }
+            .instructions { padding: 10px; font-size: 12px; margin-bottom: 12px; }
+            .controls { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }
+            button { padding: 8px 12px; font-size: 13px; border-radius: 6px; flex: 1; max-width: 180px; margin: 0; }
+            .section-title { font-size: 14px; margin: 10px 0 5px 0; }
+            .status-bar { font-size: 13px; padding: 12px; margin-top: 15px; }
+
+            /* สลับเป็นแบบปัดนิ้วซ้ายขวา (Scroll แนวนอน) */
+            .pool-zone {
+                flex-wrap: nowrap; overflow-x: auto; padding: 10px; min-height: 80px; margin-bottom: 15px;
+                scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+            }
+            .chain-zone {
+                flex-wrap: nowrap; overflow-x: auto; padding: 15px 10px; min-height: 100px;
+                scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+            }
+
+            /* ย่อขนาดการ์ดให้พอดีในมือถือ */
+            .domino-card { width: 130px; height: 65px; box-shadow: 0 3px 5px rgba(0,0,0,0.08); }
+            .card-half { font-size: 10px; padding: 4px; line-height: 1.2; }
+            .card-number { width: 16px; height: 16px; font-size: 9px; top: -6px; left: -6px; }
+            .arrow-container { font-size: 14px; }
+            .arrow-error { font-size: 9px; padding: 1px 3px; margin-top: 1px; }
+
+            .placement-actions span { display: block; margin-right: 0; margin-bottom: 8px; font-size: 13px; }
+            .placement-btn-group { display: flex; gap: 5px; }
+            .placement-btn-group button { font-size: 12px; padding: 6px 10px; flex: 1; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>เกมโดมิโน่ระบบต่อมไร้ท่อ v2 📱</h1>
-        <p>เชื่อมโยงต่อมไร้ท่อและฮอร์โมนเป็นสายโซ่ยาวเส้นเดียว (31 แผ่น)</p>
+        <h1>เกมโดมิโน่ระบบต่อมไร้ท่อ (Endocrine Dominoes Chain) v2</h1>
+        <p>เชื่อมโยงต่อมไร้ท่อและฮอร์โมนให้เป็นสายโซ่ยาวเส้นเดียวที่ถูกต้องครบทั้ง 31 แผ่น</p>
     </header>
 
     <div class="instructions">
-        📱 <strong>เล่นบนมือถือได้ง่ายๆ:</strong> ใช้สองนิ้วหรือนิ้วปัดที่กล่องคลังการ์ดและสายโซ่เพื่อ <strong>"เลื่อนไปทางซ้าย-ขวา"</strong> ไล่ดูแผ่นทั้งหมดได้เลยครับ! จิ้มแผ่นในคลังเพื่อเลือกต่อหน้าหรือหลัง และจิ้มแผ่นในสายโซ่เพื่อดึงกลับคลังได้
+        <strong>💡 คำแนะนำระบบแสดงผลอัจฉรียะ:</strong><br>
+        - 💻 <strong>เล่นบนคอมพิวเตอร์ / iPad:</strong> การ์ดจะเรียงกระจายเต็มหน้าจอลงมาด้านล่างตามปกติ ช่วยให้กดเลือกง่ายและเห็นภาพกว้าง<br>
+        - 📱 <strong>เล่นบนมือถือ:</strong> การ์ดจะถูกย่อขนาดและจัดเข้าแถวตรง คุณสามารถใช้การ <strong>"ปัดนิ้วซ้าย-ขวา"</strong> ที่กล่องคลังการ์ดและกล่องสายโซ่เพื่อเลื่อนสไลด์ดูทั้งหมดได้ทันที
     </div>
 
     <div class="controls">
         <button id="reset-btn">🔄 สุ่มการ์ดใหม่</button>
-        <button id="check-btn" style="background-color: var(--success);">🔍 ตรวจคำตอบ</button>
+        <button id="check-btn" style="background-color: var(--success);">🔍 ตรวจสอบคำตอบ</button>
     </div>
 
     <div class="game-container">
@@ -268,10 +141,10 @@
             </div>
         </div>
 
-        <div class="section-title">📦 คลังการ์ดของคุณ (👉 ปัดขวาเพื่อดูเพิ่ม):</div>
+        <div class="section-title">📦 คลังการ์ดของคุณ: (หากอยู่ในมือถือให้ปัด ซ้าย-ขวา ดูเพิ่มได้)</div>
         <div class="pool-zone" id="pool-zone"></div>
 
-        <div class="section-title">🔗 สายโซ่โดมิโน่ของคุณ (👉 ปัดขวาเพื่อดูสายโซ่):</div>
+        <div class="section-title">🔗 สายโซ่โดมิโน่ของคุณ: (หากอยู่ในมือถือให้ปัด ซ้าย-ขวา เพื่อเลื่อนดู)</div>
         <div class="chain-zone" id="chain-zone"></div>
         
         <div class="status-bar" id="status-bar">ยังไม่มีการตรวจสอบคำตอบ</div>
@@ -345,7 +218,7 @@
 
         function initGame() {
             poolZone.innerHTML = ''; chainZone.innerHTML = '';
-            statusBar.innerHTML = 'เริ่มเกมแล้ว! เลือกการ์ดแล้วกดต่อหน้าหรือต่อหลังได้เลย';
+            statusBar.innerHTML = 'เริ่มเกมแล้ว! เลือกการ์ดแล้วกดเลือกตำแหน่งที่ต้องการต่อได้เลยครับ';
             statusBar.style.color = 'var(--primary)';
             currentChain = []; hidePlacementActions();
             currentPool = shuffle([...masterCards]);
@@ -421,14 +294,14 @@
                 }
             });
             if (errorIndices.length === 0) {
-                statusBar.innerHTML = 'ในโซ่มี: ' + currentChain.length + ' / 31 ใบ';
+                statusBar.innerHTML = 'จำนวนการ์ดในสายโซ่ขณะนี้: ' + currentChain.length + ' / 31 ใบ';
                 statusBar.style.color = 'var(--primary)';
             }
         }
 
         document.getElementById('check-btn').addEventListener('click', () => {
             if (currentChain.length === 0) {
-                statusBar.innerHTML = '❌ วางการ์ดอย่างน้อย 2 ใบเพื่อตรวจ';
+                statusBar.innerHTML = '❌ กรุณาวางการ์ดในสายโซ่อย่างน้อย 2 ใบเพื่อตรวจสอบ';
                 statusBar.style.color = 'var(--accent)'; return;
             }
             let errorIndices = []; let hasWrongConnection = false;
@@ -436,15 +309,15 @@
                 if (relationships[currentChain[i].right] !== currentChain[i+1].left) { errorIndices.push(i); hasWrongConnection = true; }
             }
             if (hasWrongConnection) {
-                renderChain(errorIndices); statusBar.innerHTML = '❌ เจอจุดเชื่อมผิด! สังเกตตรงลูกศรที่มีคำว่า "ผิดตรงนี้"';
+                renderChain(errorIndices); statusBar.innerHTML = '❌ ตรวจพบจุดเชื่อมต่อผิดพลาดในสายโซ่ของคุณ! (สังเกตสัญลักษณ์สีแดง "ผิดตรงนี้!")';
                 statusBar.style.color = 'var(--accent)';
             } else {
                 renderChain();
                 if (currentChain.length === masterCards.length) {
-                    statusBar.innerHTML = '🎉 ถูกต้องสมบูรณ์แบบครบทั้ง 31 ใบแล้ว!'; statusBar.style.color = 'var(--success)';
+                    statusBar.innerHTML = '🎉 สุดยอดมาก! คุณเรียงลำดับสายโซ่ระบบต่อมไร้ท่อถูกต้องสมบูรณ์แบบครบทั้ง 31 ใบแล้ว!'; statusBar.style.color = 'var(--success)';
                     chainZone.querySelectorAll('.domino-card').forEach(el => el.classList.add('correct'));
                 } else {
-                    statusBar.innerHTML = '🔍 ' + currentChain.length + ' ใบที่วางอยู่ "เชื่อมถูกทั้งหมด" ต่อเพิ่มให้ครบเลย!';
+                    statusBar.innerHTML = '🔍 ยอดเยี่ยม! การ์ดทั้ง ' + currentChain.length + ' ใบที่คุณวางอยู่ตอนนี้ "เชื่อมต่อถูกต้องสัมพันธ์กันทั้งหมด" พยายามต่อเพิ่มให้ครบ!';
                     statusBar.style.color = 'var(--info)';
                 }
             }
