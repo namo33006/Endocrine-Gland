@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>เกมโดมิโน่ระบบต่อมไร้ท่อ (Endocrine Dominoes Chain)</title>
+    <title>เกมต่อการ์ดระบบต่อมไร้ท่อ v2 (Timer & Leaderboard)</title>
     <style>
         /* ☀️ โหมดสว่าง (Light Mode) - ค่าเริ่มต้น */
         :root {
@@ -22,6 +22,8 @@
             --pool-bg: rgba(255,255,255,0.7);
             --chain-bg: #ffffff;
             --box-shadow: rgba(0,0,0,0.08);
+            --table-header: #34495e;
+            --table-row-even: #f9f9f9;
         }
 
         /* 🌙 โหมดมืด (Dark Mode) */
@@ -41,6 +43,8 @@
             --pool-bg: rgba(44,44,44,0.5);
             --chain-bg: #222222;
             --box-shadow: rgba(0,0,0,0.4);
+            --table-header: #1e1e1e;
+            --table-row-even: #333333;
         }
 
         body {
@@ -88,6 +92,13 @@
         .controls button:hover { opacity: 0.9; }
         .controls button:active { transform: scale(0.98); }
         
+        /* สไตล์กล่องจับเวลา */
+        .timer-display {
+            display: inline-block; background: var(--card-bg); padding: 8px 20px;
+            border-radius: 20px; border: 2px solid var(--border-color);
+            font-size: 18px; font-weight: bold; margin-left: 10px; vertical-align: middle;
+        }
+
         .game-container { max-width: 1300px; margin: 0 auto; }
         .section-title { font-weight: bold; margin: 15px 0 5px 0; font-size: 16px; }
 
@@ -134,6 +145,34 @@
         
         .status-bar { text-align: center; margin-top: 25px; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 8px; background: var(--card-bg); box-shadow: 0 2px 5px var(--box-shadow); min-height: 24px; }
 
+        /* กล่องบันทึกสถิติเมื่อชนะ */
+        .save-score-zone {
+            display: none; text-align: center; background: var(--card-bg); padding: 15px;
+            border-radius: 8px; margin-top: 20px; border: 2px solid var(--success);
+            box-shadow: 0 4px 10px var(--box-shadow);
+        }
+        .save-score-zone input {
+            padding: 8px 12px; font-size: 15px; border-radius: 4px; border: 1px solid var(--border-color);
+            margin: 0 10px; width: 200px; background: var(--bg); color: var(--text-color);
+        }
+        .save-score-zone button {
+            background-color: var(--success); color: white; border: none; padding: 8px 15px;
+            font-size: 15px; border-radius: 4px; cursor: pointer;
+        }
+
+        /* โซนตาราง Leaderboard ด้านล่างสุด */
+        .leaderboard-section {
+            max-width: 600px; margin: 50px auto 20px auto; background: var(--card-bg);
+            padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px var(--box-shadow);
+            border: 1px solid var(--border-color);
+        }
+        .leaderboard-title { text-align: center; font-size: 22px; font-weight: bold; margin-top: 0; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .leaderboard-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .leaderboard-table th { background-color: var(--table-header); color: white; padding: 10px; font-size: 14px; }
+        .leaderboard-table td { padding: 10px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+        .leaderboard-table tr:nth-child(even) { background-color: var(--table-row-even); }
+        .empty-leaderboard { text-align: center; color: #7f8c8d; padding: 15px 0; font-style: italic; }
+
         /* 📱 จัดการหน้าจอมือถือ */
         @media (max-width: 767px) {
             body { padding: 10px; }
@@ -142,8 +181,9 @@
             header p { font-size: 0.85rem; }
             .theme-toggle-btn { top: 0; right: 50%; transform: translateX(50%); padding: 6px 12px; font-size: 12px; }
             .instructions { padding: 10px; font-size: 12px; margin-bottom: 12px; }
-            .controls { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }
-            .controls button { padding: 8px 12px; font-size: 13px; border-radius: 6px; flex: 1; max-width: 180px; margin: 0; }
+            .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-bottom: 12px; }
+            .controls button { padding: 8px 10px; font-size: 12px; border-radius: 6px; flex: 1; min-width: 100px; margin: 0; }
+            .timer-display { font-size: 14px; padding: 6px 12px; margin-left: 0; width: 90px; text-align: center; }
             .section-title { font-size: 14px; margin: 10px 0 5px 0; }
             .status-bar { font-size: 13px; padding: 12px; margin-top: 15px; }
 
@@ -158,6 +198,12 @@
             .placement-actions span { display: block; margin-right: 0; margin-bottom: 8px; font-size: 13px; }
             .placement-btn-group { display: flex; gap: 5px; }
             .placement-btn-group button { font-size: 12px; padding: 6px 10px; flex: 1; }
+            
+            .save-score-zone input { width: 140px; margin: 5px 0; font-size: 13px; }
+            .save-score-zone button { font-size: 13px; padding: 6px 12px; }
+            .leaderboard-section { margin-top: 30px; padding: 12px; }
+            .leaderboard-title { font-size: 18px; }
+            .leaderboard-table th, .leaderboard-table td { padding: 8px; font-size: 12px; }
         }
     </style>
 </head>
@@ -165,19 +211,21 @@
 
     <header>
         <button class="theme-toggle-btn" id="theme-toggle-btn">🌙 โหมดมืด</button>
-        <h1>เกมโดมิโน่ระบบต่อมไร้ท่อ (Endocrine Dominoes Chain)</h1>
+        <h1>เกมโดมิโน่ระบบต่อมไร้ท่อ (Endocrine Dominoes Chain) v2</h1>
         <p>เชื่อมโยงต่อมไร้ท่อและฮอร์โมนให้เป็นสายโซ่ยาวเส้นเดียวที่ถูกต้องครบทั้ง 31 แผ่น</p>
     </header>
 
     <div class="instructions">
-        <strong>💡 คำแนะนำระบบแสดงผลอัจฉริยะ:</strong><br>
+        <strong>💡 คำแนะนำระบบแสดงผลอัจฉรียะ:</strong><br>
         - 💻 <strong>เล่นบนคอมพิวเตอร์ / iPad:</strong> การ์ดจะเรียงกระจายเต็มหน้าจอลงมาด้านล่างตามปกติ ช่วยให้กดเลือกง่ายและเห็นภาพกว้าง<br>
         - 📱 <strong>เล่นบนมือถือ:</strong> การ์ดจะถูกย่อขนาดและจัดเข้าแถวตรง คุณสามารถใช้การ <strong>"ปัดนิ้วซ้าย-ขวา"</strong> ที่กล่องคลังการ์ดและกล่องสายโซ่เพื่อเลื่อนสไลด์ดูทั้งหมดได้ทันที
     </div>
 
     <div class="controls">
-        <button id="reset-btn">🔄 เริ่มเกมใหม่</button>
+        <button id="start-timer-btn" style="background-color: var(--info);">⏱️ เริ่มจับเวลา</button>
+        <button id="reset-btn">🔄 สุ่มการ์ดใหม่</button>
         <button id="check-btn" style="background-color: var(--success); color: white;">🔍 ตรวจสอบคำตอบ</button>
+        <div class="timer-display" id="timer-display">00:00</div>
     </div>
 
     <div class="game-container">
@@ -198,13 +246,36 @@
         <div class="chain-zone" id="chain-zone"></div>
         
         <div class="status-bar" id="status-bar">ยังไม่มีการตรวจสอบคำตอบ</div>
+
+        <div class="save-score-zone" id="save-score-zone">
+            🎉 <strong>ยินดีด้วยคุณชนะเกมแล้ว!</strong> เวลาของคุณคือ <span id="final-time-text" style="color:var(--accent); font-weight:bold;">00:00</span>
+            <input type="text" id="player-name-input" placeholder="พิมพ์ชื่อของคุณที่นี่..." maxlength="15">
+            <button id="save-score-btn">💾 บันทึกสถิติ</button>
+        </div>
+
+        <div class="leaderboard-section">
+            <h3 class="leaderboard-title">🏆 กระดานผู้นำ (Leaderboard)</h3>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th style="width: 20%;">อันดับ</th>
+                        <th style="width: 50%;">ชื่อผู้เล่น</th>
+                        <th style="width: 30%;">เวลาที่ใช้</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    </tbody>
+            </table>
+            <div class="empty-leaderboard" id="empty-leaderboard-msg">ยังไม่มีสถิติถูกบันทึกในเครื่องนี้</div>
+        </div>
+
     </div>
 
     <script>
         const masterCards = [
             { id: 1, left: "Adrenal Cortex", right: "Estrogen" },
             { id: 17, left: "Ovary", right: "Calcitonin" },
-            { id: 3, left: "Thyroid Gland", right: "Minarocorticoid" },
+            { id: 3, left: "Thyroid Gland", right: "Mineralocorticoid" },
             { id: 4, left: "Adrenal Cortex", right: "Prolactin" },
             { id: 5, left: "Anterior Pituitary", right: "Triiodothyronine" },
             { id: 11, left: "Thyroid Gland", right: "LH" },
@@ -253,14 +324,27 @@
         let currentChain = []; 
         let selectedCardData = null;
 
+        // ตัวแปรระบบจับเวลา
+        let timerInterval = null;
+        let totalSeconds = 0;
+        let isTimerRunning = false;
+
         const poolZone = document.getElementById('pool-zone');
         const chainZone = document.getElementById('chain-zone');
         const statusBar = document.getElementById('status-bar');
         const placementActions = document.getElementById('placement-actions');
         const selectedCardInfo = document.getElementById('selected-card-info');
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const startTimerBtn = document.getElementById('start-timer-btn');
+        const timerDisplay = document.getElementById('timer-display');
+        const saveScoreZone = document.getElementById('save-score-zone');
+        const finalTimeText = document.getElementById('final-time-text');
+        const playerNameInput = document.getElementById('player-name-input');
+        const saveScoreBtn = document.getElementById('save-score-btn');
+        const leaderboardBody = document.getElementById('leaderboard-body');
+        const emptyLeaderboardMsg = document.getElementById('empty-leaderboard-msg');
 
-        // สลับโหมด Light / Dark แบบปลอดภัย ไม่ใช้ localStorage
+        // สลับโหมด Light / Dark แบบปลอดภัย
         themeToggleBtn.addEventListener('click', () => {
             if (document.documentElement.hasAttribute('data-theme')) {
                 document.documentElement.removeAttribute('data-theme');
@@ -268,6 +352,48 @@
             } else {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 themeToggleBtn.innerText = '☀️ โหมดสว่าง';
+            }
+        });
+
+        // ฟังก์ชันระบบจับเวลา
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                startTimerBtn.innerText = '⏱️ กำลังจับเวลา...';
+                startTimerBtn.style.backgroundColor = '#7f8c8d';
+                startTimerBtn.style.cursor = 'default';
+                timerInterval = setInterval(() => {
+                    totalSeconds++;
+                    timerDisplay.innerText = formatTime(totalSeconds);
+                }, 1000);
+            }
+        }
+
+        function stopTimer() {
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+            }
+        }
+
+        function resetTimer() {
+            stopTimer();
+            totalSeconds = 0;
+            timerDisplay.innerText = '00:00';
+            startTimerBtn.innerText = '⏱️ เริ่มจับเวลา';
+            startTimerBtn.style.backgroundColor = 'var(--info)';
+            startTimerBtn.style.cursor = 'pointer';
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = (seconds % 60).toString().padStart(2, '0');
+            return mins + ':' + secs;
+        }
+
+        startTimerBtn.addEventListener('click', () => {
+            if(!isTimerRunning) {
+                startTimer();
             }
         });
 
@@ -284,14 +410,17 @@
         function initGame() {
             poolZone.innerHTML = ''; 
             chainZone.innerHTML = '';
-            statusBar.innerHTML = 'เริ่มเกมแล้ว! เลือกการ์ดแล้วกดเลือกตำแหน่งที่ต้องการต่อได้เลยครับ';
+            statusBar.innerHTML = 'เริ่มเกมแล้ว! อย่าลืมกดปุ่ม "⏱️ เริ่มจับเวลา" ก่อนเล่นเพื่อเก็บสถิตินะครับ';
             statusBar.style.color = 'var(--text-color)';
             currentChain = []; 
             hidePlacementActions();
+            saveScoreZone.style.display = 'none';
+            resetTimer();
             currentPool = shuffle([...masterCards]);
             currentPool.forEach(card => { 
                 poolZone.appendChild(createCardElement(card, 'pool')); 
             });
+            loadLeaderboard();
         }
 
         function createCardElement(card, zone) {
@@ -308,6 +437,11 @@
         }
 
         function handleCardClick(card, zone) {
+            // ถ้ากดเลือกการ์ดใบแรกในคลัง ให้แอบเริ่มจับเวลาให้อัตโนมัติเผื่อลืมกด
+            if (!isTimerRunning && zone === 'pool') {
+                startTimer();
+            }
+
             if (zone === 'pool') {
                 const oldSelected = poolZone.querySelector('.domino-card.selected');
                 if (oldSelected) oldSelected.classList.remove('selected');
@@ -390,7 +524,7 @@
 
         document.getElementById('check-btn').addEventListener('click', () => {
             if (currentChain.length === 0) {
-                statusBar.innerHTML = '❌ กรุณาวางการ์ดในสายโซ่อย่างน้อย 2 ใบเพื่อตรวจสอบ';
+                statusBar.innerHTML = '❌ กรุณาวางการ์ดในสายโซอย่างน้อย 2 ใบเพื่อตรวจสอบ';
                 statusBar.style.color = 'var(--accent)'; 
                 return;
             }
@@ -404,14 +538,19 @@
             }
             if (hasWrongConnection) {
                 renderChain(errorIndices); 
-                statusBar.innerHTML = '❌ แย่จังตรวจพบจุดเชื่อมต่อผิดพลาดในสายโซ่ของคุณ! (สังเกตสัญลักษณ์สีแดง "ผิดตรงนี้!")';
+                statusBar.innerHTML = '❌ ตรวจพบจุดเชื่อมต่อผิดพลาดในสายโซ่ของคุณ! (สังเกตสัญลักษณ์สีแดง "ผิดตรงนี้!")';
                 statusBar.style.color = 'var(--accent)';
             } else {
                 renderChain();
                 if (currentChain.length === masterCards.length) {
-                    statusBar.innerHTML = '🎉 ว้าวสุดยอดไปเลย! คุณเรียงลำดับสายโซ่ระบบต่อมไร้ท่อถูกต้องสมบูรณ์แบบครบทั้ง 31 ใบแล้ว!'; 
+                    stopTimer(); // หยุดเวลาทันทีเมื่อต่อครบและถูกต้องครบทั้งหมด
+                    statusBar.innerHTML = '🎉 สุดยอดมาก! คุณเรียงลำดับสายโซ่ระบบต่อมไร้ท่อถูกต้องสมบูรณ์แบบครบทั้ง 31 ใบแล้ว!'; 
                     statusBar.style.color = 'var(--success)';
                     chainZone.querySelectorAll('.domino-card').forEach(el => el.classList.add('correct'));
+                    
+                    // แสดงพื้นที่กล่องกรอกชื่อบันทึกสถิติ
+                    finalTimeText.innerText = formatTime(totalSeconds);
+                    saveScoreZone.style.display = 'block';
                 } else {
                     statusBar.innerHTML = '🔍 ยอดเยี่ยม! การ์ดทั้ง ' + currentChain.length + ' ใบที่คุณวางอยู่ตอนนี้ "เชื่อมต่อถูกต้องสัมพันธ์กันทั้งหมด" พยายามต่อเพิ่มให้ครบ!';
                     statusBar.style.color = 'var(--info)';
@@ -419,16 +558,81 @@
             }
         });
 
-        // ระบบยืนยัน 2 ชั้นก่อนสุ่มใหม่ (Double Confirm) ป้องกันการกดพลาดอย่างละเอียด
+        // ระบบยืนยัน 2 ชั้นก่อนสุ่มใหม่
         document.getElementById('reset-btn').addEventListener('click', () => {
-            const firstCheck = confirm("คุณต้องการล้างกระดานและเริ่มเกมใหม่ทั้งหมดใช่หรือไม่?");
+            const firstCheck = confirm("คุณต้องการล้างกระดานและสุ่มการ์ดใหม่ทั้งหมดใช่หรือไม่?");
             if (firstCheck) {
-                const secondCheck = confirm("⚠️ การ์ดที่คุณต่อค้างไว้ทั้งหมดจะหายไปทันที ยืนยันที่จะเริ่มใหม่จริงๆ ใช่ไหม?");
+                const secondCheck = confirm("⚠️ การ์ดที่คุณต่อค้างไว้รวมถึงเวลาที่จับไว้ทั้งหมดจะหายไปทันที ยืนยันใช่ไหม?");
                 if (secondCheck) {
                     initGame();
                 }
             }
         });
+
+        // ฟังก์ชันระบบ Leaderboard (บันทึกและโหลดสถิติ)แบบปลอดภัย
+        function loadLeaderboard() {
+            leaderboardBody.innerHTML = '';
+            let scores = [];
+            try {
+                scores = JSON.parse(localStorage.getItem('domino_scores')) || [];
+            } catch(e) { scores = []; }
+
+            if (scores.length === 0) {
+                emptyLeaderboardMsg.style.display = 'block';
+                return;
+            }
+            emptyLeaderboardMsg.style.display = 'none';
+            
+            // เรียงลำดับจากคนที่ใช้เวลาน้อยที่สุดขึ้นก่อน
+            scores.sort((a, b) => a.time - b.time);
+            
+            // แสดงผลสูงสุด 10 อันดับแรก
+            scores.slice(0, 10).forEach((entry, idx) => {
+                const tr = document.createElement('tr');
+                let rankDisplay = idx + 1;
+                if(rankDisplay === 1) rankDisplay = '🥇 1';
+                else if(rankDisplay === 2) rankDisplay = '🥈 2';
+                else if(rankDisplay === 3) rankDisplay = '🥉 3';
+
+                tr.innerHTML = '<td>' + rankDisplay + '</td>' +
+                               '<td>' + escapeHTML(entry.name) + '</td>' +
+                               '<td>' + formatTime(entry.time) + '</td>';
+                leaderboardBody.appendChild(tr);
+            });
+        }
+
+        saveScoreBtn.addEventListener('click', () => {
+            let name = playerNameInput.value.trim();
+            if (!name) {
+                alert('กรุณาใส่ชื่อของคุณก่อนกดบันทึกครับ');
+                return;
+            }
+            
+            let scores = [];
+            try {
+                scores = JSON.parse(localStorage.getItem('domino_scores')) || [];
+            } catch(e) { scores = []; }
+
+            scores.push({ name: name, time: totalSeconds });
+            
+            try {
+                localStorage.setItem('domino_scores', JSON.stringify(scores));
+            } catch(e) {}
+
+            alert('บันทึกสถิติของคุณลงกระดานผู้นำเรียบร้อยแล้วครับ!');
+            playerNameInput.value = '';
+            saveScoreZone.style.display = 'none';
+            loadLeaderboard();
+            
+            // เลื่อนหน้าจอลงมาด้านล่างสุดเพื่อให้เห็นบอร์ดทันที
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
 
         window.onload = initGame;
     </script>
