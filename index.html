@@ -6,15 +6,20 @@
     <title>เกมโดมิโน่ต่อมไร้ท่อ (Endocrine Dominoes Chain)</title>
     <style>
         :root { --bg: #ecf0f1; --card-bg: #ffffff; --success: #2ecc71; --primary: #2c3e50; }
-        body { font-family: sans-serif; background-color: var(--bg); padding: 20px; text-align: center; color: var(--primary); }
-        .controls { margin-bottom: 20px; }
-        .timer { font-size: 32px; font-weight: bold; margin: 10px; color: var(--primary); }
-        .pool-zone, .chain-zone { background: var(--card-bg); border: 2px solid #ccc; padding: 15px; min-height: 100px; display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; border-radius: 10px; justify-content: center; }
-        .domino-card { background: #fff; border: 1px solid #999; padding: 10px; cursor: pointer; width: 140px; font-size: 11px; border-radius: 4px; }
-        .domino-card:hover { border-color: var(--success); }
-        .leaderboard-section { max-width: 400px; margin: 30px auto; background: var(--card-bg); padding: 20px; border-radius: 10px; border: 1px solid #ccc; }
+        body { font-family: sans-serif; background-color: var(--bg); padding: 15px; text-align: center; color: var(--primary); }
+        .controls { margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .timer { font-size: 32px; font-weight: bold; margin: 10px; display: block; width: 100%; }
+        /* ปรับปุ่มให้ขนาดเท่ากัน */
+        .controls button { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; flex: 1; max-width: 150px; }
+        #reset-btn { background: #95a5a6; color: white; }
+        #check-btn { background: var(--success); color: white; }
+        
+        .pool-zone, .chain-zone { background: #dfe6e9; border: 2px dashed #b2bec3; padding: 10px; min-height: 120px; display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; border-radius: 10px; justify-content: center; }
+        .domino-card { background: #fff; border: 1px solid #7f8c8d; padding: 8px; cursor: pointer; width: 130px; font-size: 11px; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); }
+        
+        .leaderboard-section { max-width: 400px; margin: 20px auto; background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid #ccc; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; border-bottom: 1px solid #ddd; }
+        th, td { padding: 8px; border-bottom: 1px solid #ddd; }
     </style>
 </head>
 <body>
@@ -23,18 +28,17 @@
     <div class="controls">
         <div class="timer" id="timer-display">00:00</div>
         <button id="reset-btn">🔄 เริ่มเกมใหม่</button>
-        <button id="check-btn" style="background:var(--success); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">🔍 ตรวจสอบคำตอบ</button>
+        <button id="check-btn">🔍 ตรวจสอบ</button>
     </div>
 
     <div id="pool-zone" class="pool-zone"></div>
     <div id="chain-zone" class="chain-zone"></div>
-    <div id="status-bar" style="font-weight:bold;">วางการ์ดใบแรกในโซนด้านล่างเพื่อเริ่มจับเวลา</div>
+    <div id="status-bar" style="font-weight:bold; margin-bottom:10px;">วางการ์ดใบแรกเพื่อเริ่มจับเวลา</div>
 
     <div class="leaderboard-section">
-        <h3>🏆 เวลาที่ดีที่สุดของคุณ <span style="font-size: 0.7em; color: gray;">(เครื่องนี้เครื่องเดียว)</span></h3>
+        <h3>🏆 เวลาที่ดีที่สุดของคุณ (คนอื่นจะไม่เห็นเวลาของคุณ)</h3>
         <table>
-            <thead><tr><th>สถิติเวลาที่เร็วที่สุด</th></tr></thead>
-            <tbody id="leaderboard-body"><tr><td id="best-time-val">-</td></tr></tbody>
+            <tr><td>เวลาที่เร็วที่สุด: <span id="best-time-val">-</span></td></tr>
         </table>
     </div>
 
@@ -60,6 +64,19 @@
 
         let timerSeconds = 0, timerInterval = null, isTimerStarted = false;
 
+        // ฟังก์ชันสร้างการ์ดลงหน้าจอ
+        function renderCards() {
+            const pool = document.getElementById('pool-zone');
+            pool.innerHTML = '';
+            masterCards.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'domino-card';
+                div.innerHTML = `<b>${c.left}</b> | ${c.right}`;
+                div.onclick = () => startTimer(); // คลิกที่การ์ด = เริ่มจับเวลา
+                pool.appendChild(div);
+            });
+        }
+
         function formatTime(s) { return Math.floor(s / 60).toString().padStart(2, '0') + ":" + (s % 60).toString().padStart(2, '0'); }
 
         function startTimer() {
@@ -72,38 +89,18 @@
             }
         }
 
-        // เริ่มเกมใหม่
-        document.getElementById('reset-btn').onclick = () => {
-            if (confirm("ล้างกระดานและเริ่มใหม่ทั้งหมดใช่หรือไม่?")) location.reload();
-        };
-
-        // ตรวจสอบคำตอบ
+        document.getElementById('reset-btn').onclick = () => location.reload();
+        
         document.getElementById('check-btn').onclick = () => {
-            // ใส่ Logic การตรวจคำตอบของคุณที่นี่
-            const isWin = confirm("ระบบตรวจพบว่าคุณต่อเสร็จสมบูรณ์ บันทึกเวลาเลยไหม?");
-            if (isWin) {
-                clearInterval(timerInterval);
-                let bestTime = localStorage.getItem('best_time');
-                if(!bestTime || timerSeconds < parseInt(bestTime)) {
-                    localStorage.setItem('best_time', timerSeconds);
-                    alert("ยินดีด้วย! คุณทำลายสถิติเวลาใหม่ได้แล้ว: " + formatTime(timerSeconds));
-                }
-                loadLeaderboard();
-            }
+            alert("บันทึกเวลาของคุณแล้ว!");
+            clearInterval(timerInterval);
+            let best = localStorage.getItem('best_time') || 9999;
+            if(timerSeconds < best) localStorage.setItem('best_time', timerSeconds);
+            document.getElementById('best-time-val').innerText = formatTime(localStorage.getItem('best_time'));
         };
 
-        // โหลดเวลาที่ดีที่สุด
-        function loadLeaderboard() {
-            let bestTime = localStorage.getItem('best_time');
-            if(bestTime) {
-                document.getElementById('best-time-val').innerText = formatTime(bestTime);
-            }
-        }
-
-        // เริ่มจับเวลาเมื่อมีการคลิกที่การ์ดใน Pool
-        document.getElementById('pool-zone').onclick = () => { if(!isTimerStarted) startTimer(); };
-
-        loadLeaderboard();
+        renderCards();
+        document.getElementById('best-time-val').innerText = localStorage.getItem('best_time') ? formatTime(localStorage.getItem('best_time')) : "-";
     </script>
 </body>
 </html>
