@@ -3,104 +3,434 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>เกมโดมิโน่ต่อมไร้ท่อ (Endocrine Dominoes Chain)</title>
+    <title>เกมโดมิโน่ระบบต่อมไร้ท่อ (Endocrine Dominoes Chain)</title>
     <style>
-        :root { --bg: #ecf0f1; --card-bg: #ffffff; --success: #2ecc71; --primary: #2c3e50; }
-        body { font-family: sans-serif; background-color: var(--bg); padding: 15px; text-align: center; color: var(--primary); }
-        .controls { margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .timer { font-size: 32px; font-weight: bold; margin: 10px; display: block; width: 100%; }
-        /* ปรับปุ่มให้ขนาดเท่ากัน */
-        .controls button { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; flex: 1; max-width: 150px; }
-        #reset-btn { background: #95a5a6; color: white; }
-        #check-btn { background: var(--success); color: white; }
+        /* ☀️ โหมดสว่าง (Light Mode) - ค่าเริ่มต้น */
+        :root {
+            --primary: #2c3e50;
+            --accent: #e74c3c;
+            --bg: #ecf0f1;
+            --card-bg: #ffffff;
+            --success: #2ecc71;
+            --info: #3498db;
+            --text-color: #2c3e50;
+            --text-left: #2c3e50;
+            --text-right: #c0392b;
+            --card-left-bg: #fdfdfd;
+            --card-right-bg: #f7f9fa;
+            --border-color: #bdc3c7;
+            --pool-bg: rgba(255,255,255,0.7);
+            --chain-bg: #ffffff;
+            --box-shadow: rgba(0,0,0,0.08);
+        }
+
+        /* 🌙 โหมดมืด (Dark Mode) */
+        [data-theme="dark"] {
+            --primary: #ecf0f1;
+            --accent: #e74c3c;
+            --bg: #1a1c1e;
+            --card-bg: #2c2c2c;
+            --success: #2ecc71;
+            --info: #3498db;
+            --text-color: #e0e0e0;
+            --text-left: #ecf0f1;
+            --text-right: #ff6b6b;
+            --card-left-bg: #333333;
+            --card-right-bg: #3a3a3a;
+            --border-color: #444444;
+            --pool-bg: rgba(44,44,44,0.5);
+            --chain-bg: #222222;
+            --box-shadow: rgba(0,0,0,0.4);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-color);
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        header { text-align: center; margin-bottom: 20px; position: relative; padding-top: 45px; }
+        h1 { margin: 0 0 10px 0; color: var(--text-color); font-size: 2rem; }
         
-        .pool-zone, .chain-zone { background: #dfe6e9; border: 2px dashed #b2bec3; padding: 10px; min-height: 120px; display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; border-radius: 10px; justify-content: center; }
-        .domino-card { background: #fff; border: 1px solid #7f8c8d; padding: 8px; cursor: pointer; width: 130px; font-size: 11px; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); }
+        /* ปุ่มสลับโหมดธีม */
+        .theme-toggle-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px var(--box-shadow);
+            transition: all 0.2s;
+        }
+
+        .instructions {
+            background: var(--card-bg); padding: 15px; border-radius: 8px;
+            max-width: 900px; margin: 0 auto 20px auto;
+            box-shadow: 0 2px 5px var(--box-shadow); font-size: 14px; line-height: 1.6;
+        }
+        .controls { text-align: center; margin-bottom: 20px; }
         
-        .leaderboard-section { max-width: 400px; margin: 20px auto; background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid #ccc; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 8px; border-bottom: 1px solid #ddd; }
+        /* ปุ่มควบคุมหลัก */
+        .controls button {
+            background-color: #2c3e50; color: white; border: none;
+            padding: 10px 20px; font-size: 15px; border-radius: 5px;
+            cursor: pointer; transition: background 0.2s, transform 0.1s; margin: 5px;
+        }
+        .controls button:hover { opacity: 0.9; }
+        .controls button:active { transform: scale(0.98); }
+        
+        .game-container { max-width: 1300px; margin: 0 auto; }
+        .section-title { font-weight: bold; margin: 15px 0 5px 0; font-size: 16px; }
+
+        /* พื้นที่แสดงการ์ด */
+        .pool-zone {
+            background: var(--pool-bg); border: 2px dashed var(--border-color); border-radius: 10px;
+            padding: 15px; min-height: 120px; display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;
+        }
+        .chain-zone {
+            background: var(--chain-bg); border: 2px solid var(--border-color); border-radius: 10px;
+            padding: 25px 20px; min-height: 180px; display: flex; flex-wrap: wrap; gap: 12px;
+            align-items: center; box-shadow: inset 0 2px 10px var(--box-shadow);
+        }
+        
+        /* การ์ดโดมิโน่ */
+        .domino-card {
+            background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 6px;
+            width: 175px; height: 75px; display: flex; flex-shrink: 0; cursor: pointer;
+            user-select: none; box-shadow: 0 4px 6px var(--box-shadow); position: relative;
+        }
+        .card-half {
+            width: 50%; padding: 6px; display: flex; align-items: center; justify-content: center;
+            text-align: center; font-size: 11px; font-weight: 600; word-break: break-word;
+        }
+        .card-left { border-right: 1px dashed var(--border-color); background-color: var(--card-left-bg); color: var(--text-left); border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+        .card-right { background-color: var(--card-right-bg); color: var(--text-right); border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+
+        /* ลูกศรและข้อความผิดพลาด */
+        .arrow-container { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 18px; color: #7f8c8d; user-select: none; flex-shrink: 0; }
+        .arrow-error { color: var(--accent); font-size: 11px; font-weight: bold; margin-top: 2px; background: #fdf2f2; padding: 2px 4px; border-radius: 3px; border: 1px solid rgba(231, 76, 60, 0.2); white-space: nowrap; }
+        [data-theme="dark"] .arrow-error { background: #3a1a1a; }
+
+        /* สถานะพิเศษของการ์ด */
+        .domino-card:hover { transform: translateY(-3px); }
+        .domino-card.selected { border-color: var(--accent); box-shadow: 0 0 10px rgba(231, 76, 60, 0.6); }
+        .domino-card.correct { border-color: var(--success); background-color: rgba(46, 204, 113, 0.1); }
+        .domino-card.wrong-connection { border-color: var(--accent); background-color: rgba(231, 76, 60, 0.1); }
+        
+        /* ส่วนเลือกตำแหน่งวางการ์ด */
+        .placement-actions { text-align: center; background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px var(--box-shadow); display: none; }
+        .placement-actions span { font-weight: bold; margin-right: 15px; color: var(--accent); }
+        .placement-btn-group { display: inline-block; }
+        .placement-btn-group button { color: white; border: none; padding: 8px 15px; font-size: 14px; border-radius: 4px; cursor: pointer; margin: 2px; }
+        
+        .status-bar { text-align: center; margin-top: 25px; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 8px; background: var(--card-bg); box-shadow: 0 2px 5px var(--box-shadow); min-height: 24px; }
+
+        /* 📱 จัดการหน้าจอมือถือ */
+        @media (max-width: 767px) {
+            body { padding: 10px; }
+            header { padding-top: 50px; }
+            h1 { font-size: 1.3rem; margin: 5px 0; }
+            header p { font-size: 0.85rem; }
+            .theme-toggle-btn { top: 0; right: 50%; transform: translateX(50%); padding: 6px 12px; font-size: 12px; }
+            .instructions { padding: 10px; font-size: 12px; margin-bottom: 12px; }
+            .controls { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }
+            .controls button { padding: 8px 12px; font-size: 13px; border-radius: 6px; flex: 1; max-width: 180px; margin: 0; }
+            .section-title { font-size: 14px; margin: 10px 0 5px 0; }
+            .status-bar { font-size: 13px; padding: 12px; margin-top: 15px; }
+
+            .pool-zone { flex-wrap: nowrap; overflow-x: auto; padding: 10px; min-height: 80px; margin-bottom: 15px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+            .chain-zone { flex-wrap: nowrap; overflow-x: auto; padding: 15px 10px; min-height: 100px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+
+            .domino-card { width: 130px; height: 65px; box-shadow: 0 3px 5px var(--box-shadow); }
+            .card-half { font-size: 10px; padding: 4px; line-height: 1.2; }
+            .arrow-container { font-size: 14px; }
+            .arrow-error { font-size: 9px; padding: 1px 3px; margin-top: 1px; }
+
+            .placement-actions span { display: block; margin-right: 0; margin-bottom: 8px; font-size: 13px; }
+            .placement-btn-group { display: flex; gap: 5px; }
+            .placement-btn-group button { font-size: 12px; padding: 6px 10px; flex: 1; }
+        }
     </style>
 </head>
 <body>
 
-    <h1>เกมโดมิโน่ต่อมไร้ท่อ (Endocrine Dominoes Chain)</h1>
-    <div class="controls">
-        <div class="timer" id="timer-display">00:00</div>
-        <button id="reset-btn">🔄 เริ่มเกมใหม่</button>
-        <button id="check-btn">🔍 ตรวจสอบ</button>
+    <header>
+        <button class="theme-toggle-btn" id="theme-toggle-btn">🌙 โหมดมืด</button>
+        <h1>เกมโดมิโน่ระบบต่อมไร้ท่อ (Endocrine Dominoes Chain)</h1>
+        <p>เชื่อมโยงต่อมไร้ท่อและฮอร์โมนให้เป็นสายโซ่ยาวเส้นเดียวที่ถูกต้องครบทั้ง 31 แผ่น</p>
+    </header>
+
+    <div class="instructions">
+        <strong>💡 คำแนะนำระบบแสดงผลอัจฉริยะ:</strong><br>
+        - 💻 <strong>เล่นบนคอมพิวเตอร์ / iPad:</strong> การ์ดจะเรียงกระจายเต็มหน้าจอลงมาด้านล่างตามปกติ ช่วยให้กดเลือกง่ายและเห็นภาพกว้าง<br>
+        - 📱 <strong>เล่นบนมือถือ:</strong> การ์ดจะถูกย่อขนาดและจัดเข้าแถวตรง คุณสามารถใช้การ <strong>"ปัดนิ้วซ้าย-ขวา"</strong> ที่กล่องคลังการ์ดและกล่องสายโซ่เพื่อเลื่อนสไลด์ดูทั้งหมดได้ทันที
     </div>
 
-    <div id="pool-zone" class="pool-zone"></div>
-    <div id="chain-zone" class="chain-zone"></div>
-    <div id="status-bar" style="font-weight:bold; margin-bottom:10px;">วางการ์ดใบแรกเพื่อเริ่มจับเวลา</div>
+    <div class="controls">
+        <button id="reset-btn">🔄 เริ่มเกมใหม่</button>
+        <button id="check-btn" style="background-color: var(--success); color: white;">🔍 ตรวจสอบคำตอบ</button>
+    </div>
 
-    <div class="leaderboard-section">
-        <h3>🏆 เวลาที่ดีที่สุดของคุณ (คนอื่นจะไม่เห็นเวลาของคุณ)</h3>
-        <table>
-            <tr><td>เวลาที่เร็วที่สุด: <span id="best-time-val">-</span></td></tr>
-        </table>
+    <div class="game-container">
+        
+        <div class="placement-actions" id="placement-actions">
+            <span id="selected-card-info">กำลังเลือกการ์ด...</span>
+            <div class="placement-btn-group">
+                <button id="btn-prepend" style="background-color: var(--info);">➕ ต่อหน้าสุด</button>
+                <button id="btn-append" style="background-color: #34495e;">➕ ต่อหลังสุด</button>
+                <button id="btn-cancel" style="background-color: #95a5a6;">ยกเลิก</button>
+            </div>
+        </div>
+
+        <div class="section-title">📦 คลังการ์ดของคุณ: (หากอยู่ในมือถือให้ปัด ซ้าย-ขวา ดูเพิ่มได้)</div>
+        <div class="pool-zone" id="pool-zone"></div>
+
+        <div class="section-title">🔗 สายโซ่โดมิโน่ของคุณ: (หากอยู่ในมือถือให้ปัด ซ้าย-ขวา เพื่อเลื่อนดู)</div>
+        <div class="chain-zone" id="chain-zone"></div>
+        
+        <div class="status-bar" id="status-bar">ยังไม่มีการตรวจสอบคำตอบ</div>
     </div>
 
     <script>
         const masterCards = [
-            { id: 1, left: "Adrenal Cortex", right: "Estrogen" }, { id: 17, left: "Ovary", right: "Calcitonin" },
-            { id: 3, left: "Thyroid Gland", right: "Minarocorticoid" }, { id: 4, left: "Adrenal Cortex", right: "Prolactin" },
-            { id: 5, left: "Anterior Pituitary", right: "Triiodothyronine" }, { id: 11, left: "Thyroid Gland", right: "LH" },
-            { id: 6, left: "Anterior Pituitary", right: "Melatonin" }, { id: 20, left: "Pineal Gland", right: "Glucagon" },
-            { id: 15, left: "Pancreas", right: "Nor Epinephrine" }, { id: 7, left: "Adrenal Medulla", right: "Secretin" },
-            { id: 2, left: "Small Intestine", right: "Erythropoietin" }, { id: 13, left: "Kidney", right: "HCG" },
-            { id: 26, left: "Placenta", right: "ACTH" }, { id: 12, left: "Anterior Pituitary", right: "Parathormone" },
-            { id: 24, left: "Parathyroid Gland", right: "Sex hormone" }, { id: 14, left: "Adrenal Cortex", right: "Thyroxin" },
-            { id: 27, left: "Thyroid Gland", right: "Thymosin" }, { id: 8, left: "Thymus", right: "Progesterone" },
-            { id: 21, left: "Ovary", right: "Glucocorticoid" }, { id: 18, left: "Adrenal Cortex", right: "Epinephrine" },
-            { id: 10, left: "Adrenal Medulla", right: "Renin" }, { id: 23, left: "Kidney", right: "Antidiuretic Hormone ADH" },
-            { id: 16, left: "Posterior Pituitary", right: "Gastrin" }, { id: 9, left: "Stomach", right: "TSH" },
-            { id: 22, left: "Anterior Pituitary", right: "Cortisol" }, { id: 31, left: "Adrenal Cortex", right: "Testosterone" },
-            { id: 28, left: "Testis", right: "Growth hormone" }, { id: 29, left: "Anterior Pituitary", right: "Insulin" },
-            { id: 19, left: "Pancreas", right: "FSH" }, { id: 25, left: "Anterior Pituitary", right: "Oxytocin" },
+            { id: 1, left: "Adrenal Cortex", right: "Estrogen" },
+            { id: 17, left: "Ovary", right: "Calcitonin" },
+            { id: 3, left: "Thyroid Gland", right: "Minarocorticoid" },
+            { id: 4, left: "Adrenal Cortex", right: "Prolactin" },
+            { id: 5, left: "Anterior Pituitary", right: "Triiodothyronine" },
+            { id: 11, left: "Thyroid Gland", right: "LH" },
+            { id: 6, left: "Anterior Pituitary", right: "Melatonin" },
+            { id: 20, left: "Pineal Gland", right: "Glucagon" },
+            { id: 15, left: "Pancreas", right: "Nor Epinephrine" },
+            { id: 7, left: "Adrenal Medulla", right: "Secretin" },
+            { id: 2, left: "Small Intestine", right: "Erythropoietin" },
+            { id: 13, left: "Kidney", right: "HCG" },
+            { id: 26, left: "Placenta", right: "ACTH" },
+            { id: 12, left: "Anterior Pituitary", right: "Parathormone" },
+            { id: 24, left: "Parathyroid Gland", right: "Sex hormone" },
+            { id: 14, left: "Adrenal Cortex", right: "Thyroxin" },
+            { id: 27, left: "Thyroid Gland", right: "Thymosin" },
+            { id: 8, left: "Thymus", right: "Progesterone" },
+            { id: 21, left: "Ovary", right: "Glucocorticoid" },
+            { id: 18, left: "Adrenal Cortex", right: "Epinephrine" },
+            { id: 10, left: "Adrenal Medulla", right: "Renin" },
+            { id: 23, left: "Kidney", right: "Antidiuretic Hormone ADH" },
+            { id: 16, left: "Posterior Pituitary", right: "Gastrin" },
+            { id: 9, left: "Stomach", right: "TSH" },
+            { id: 22, left: "Anterior Pituitary", right: "Cortisol" },
+            { id: 31, left: "Adrenal Cortex", right: "Testosterone" },
+            { id: 28, left: "Testis", right: "Growth hormone" },
+            { id: 29, left: "Anterior Pituitary", right: "Insulin" },
+            { id: 19, left: "Pancreas", right: "FSH" },
+            { id: 25, left: "Anterior Pituitary", right: "Oxytocin" },
             { id: 30, left: "Posterior Pituitary", right: "Aldosterone" }
         ];
 
-        let timerSeconds = 0, timerInterval = null, isTimerStarted = false;
+        const relationships = {
+            "Estrogen": "Ovary", "Erythropoietin": "Kidney", "Mineralocorticoid": "Adrenal Cortex",
+            "Prolactin": "Anterior Pituitary", "Triiodothyronine": "Thyroid Gland", "Melatonin": "Pineal Gland",
+            "Secretin": "Small Intestine", "Progesterone": "Ovary", "TSH": "Anterior Pituitary",
+            "Renin": "Kidney", "LH": "Anterior Pituitary", "Parathormone": "Parathyroid Gland",
+            "HCG": "Placenta", "Thyroxin": "Thyroid Gland", "Nor Epinephrine": "Adrenal Medulla",
+            "Gastrin": "Stomach", "Calcitonin": "Thyroid Gland", "Epinephrine": "Adrenal Medulla",
+            "FSH": "Anterior Pituitary", "Glucagon": "Pancreas", "Glucocorticoid": "Adrenal Cortex",
+            "Cortisol": "Adrenal Cortex", "Antidiuretic Hormone ADH": "Posterior Pituitary",
+            "Sex hormone": "Adrenal Cortex", "Oxytocin": "Posterior Pituitary", "ACTH": "Anterior Pituitary",
+            "Thymosin": "Thymus", "Growth hormone": "Anterior Pituitary", "Insulin": "Pancreas",
+            "Aldosterone": "Adrenal Cortex", "Testosterone": "Testis"
+        };
 
-        // ฟังก์ชันสร้างการ์ดลงหน้าจอ
-        function renderCards() {
-            const pool = document.getElementById('pool-zone');
-            pool.innerHTML = '';
-            masterCards.forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'domino-card';
-                div.innerHTML = `<b>${c.left}</b> | ${c.right}`;
-                div.onclick = () => startTimer(); // คลิกที่การ์ด = เริ่มจับเวลา
-                pool.appendChild(div);
+        let currentPool = []; 
+        let currentChain = []; 
+        let selectedCardData = null;
+
+        const poolZone = document.getElementById('pool-zone');
+        const chainZone = document.getElementById('chain-zone');
+        const statusBar = document.getElementById('status-bar');
+        const placementActions = document.getElementById('placement-actions');
+        const selectedCardInfo = document.getElementById('selected-card-info');
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+
+        // สลับโหมด Light / Dark แบบปลอดภัย ไม่ใช้ localStorage
+        themeToggleBtn.addEventListener('click', () => {
+            if (document.documentElement.hasAttribute('data-theme')) {
+                document.documentElement.removeAttribute('data-theme');
+                themeToggleBtn.innerText = '🌙 โหมดมืด';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggleBtn.innerText = '☀️ โหมดสว่าง';
+            }
+        });
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function initGame() {
+            poolZone.innerHTML = ''; 
+            chainZone.innerHTML = '';
+            statusBar.innerHTML = 'เริ่มเกมแล้ว! เลือกการ์ดแล้วกดเลือกตำแหน่งที่ต้องการต่อได้เลยครับ';
+            statusBar.style.color = 'var(--text-color)';
+            currentChain = []; 
+            hidePlacementActions();
+            currentPool = shuffle([...masterCards]);
+            currentPool.forEach(card => { 
+                poolZone.appendChild(createCardElement(card, 'pool')); 
             });
         }
 
-        function formatTime(s) { return Math.floor(s / 60).toString().padStart(2, '0') + ":" + (s % 60).toString().padStart(2, '0'); }
+        function createCardElement(card, zone) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'domino-card';
+            cardDiv.id = 'card-' + zone + '-' + card.id;
+            cardDiv.innerHTML = '<div class="card-half card-left">' + card.left + '</div>' +
+                                '<div class="card-half card-right">' + card.right + '</div>';
+            cardDiv.addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                handleCardClick(card, zone); 
+            });
+            return cardDiv;
+        }
 
-        function startTimer() {
-            if (!isTimerStarted) {
-                isTimerStarted = true;
-                timerInterval = setInterval(() => {
-                    timerSeconds++;
-                    document.getElementById('timer-display').innerText = formatTime(timerSeconds);
-                }, 1000);
+        function handleCardClick(card, zone) {
+            if (zone === 'pool') {
+                const oldSelected = poolZone.querySelector('.domino-card.selected');
+                if (oldSelected) oldSelected.classList.remove('selected');
+                
+                selectedCardData = card;
+                const targetCard = document.getElementById('card-pool-' + card.id);
+                if (targetCard) targetCard.classList.add('selected');
+                
+                selectedCardInfo.innerText = 'เลือกการ์ด: ' + card.left + ' / ' + card.right;
+                placementActions.style.display = 'block';
+            } else if (zone === 'chain') {
+                const index = currentChain.findIndex(c => c.id === card.id);
+                if (index !== -1) {
+                    currentChain.splice(index, 1); 
+                    currentPool.push(card);
+                    poolZone.appendChild(createCardElement(card, 'pool'));
+                    renderChain(); 
+                    hidePlacementActions();
+                }
             }
         }
 
-        document.getElementById('reset-btn').onclick = () => location.reload();
-        
-        document.getElementById('check-btn').onclick = () => {
-            alert("บันทึกเวลาของคุณแล้ว!");
-            clearInterval(timerInterval);
-            let best = localStorage.getItem('best_time') || 9999;
-            if(timerSeconds < best) localStorage.setItem('best_time', timerSeconds);
-            document.getElementById('best-time-val').innerText = formatTime(localStorage.getItem('best_time'));
-        };
+        function hidePlacementActions() {
+            selectedCardData = null; 
+            placementActions.style.display = 'none';
+            const oldSelected = poolZone.querySelector('.domino-card.selected');
+            if (oldSelected) oldSelected.classList.remove('selected');
+        }
 
-        renderCards();
-        document.getElementById('best-time-val').innerText = localStorage.getItem('best_time') ? formatTime(localStorage.getItem('best_time')) : "-";
+        document.getElementById('btn-prepend').addEventListener('click', () => {
+            if (selectedCardData) {
+                currentChain.unshift(selectedCardData); 
+                currentPool = currentPool.filter(c => c.id !== selectedCardData.id);
+                const el = document.getElementById('card-pool-' + selectedCardData.id);
+                if (el) el.remove();
+                renderChain(); 
+                hidePlacementActions();
+                chainZone.scrollLeft = 0;
+            }
+        });
+
+        document.getElementById('btn-append').addEventListener('click', () => {
+            if (selectedCardData) {
+                currentChain.push(selectedCardData); 
+                currentPool = currentPool.filter(c => c.id !== selectedCardData.id);
+                const el = document.getElementById('card-pool-' + selectedCardData.id);
+                if (el) el.remove();
+                renderChain(); 
+                hidePlacementActions();
+                chainZone.scrollLeft = chainZone.scrollWidth;
+            }
+        });
+
+        document.getElementById('btn-cancel').addEventListener('click', hidePlacementActions);
+
+        function renderChain(errorIndices = []) {
+            chainZone.innerHTML = '';
+            currentChain.forEach((card, index) => {
+                const cardEl = createCardElement(card, 'chain');
+                if (errorIndices.includes(index) || errorIndices.includes(index - 1)) {
+                    cardEl.classList.add('wrong-connection');
+                }
+                chainZone.appendChild(cardEl);
+                if (index < currentChain.length - 1) {
+                    const arrowContainer = document.createElement('div');
+                    arrowContainer.className = 'arrow-container';
+                    if (errorIndices.includes(index)) {
+                        arrowContainer.innerHTML = '<span>❌</span><span class="arrow-error">ผิดตรงนี้!</span>';
+                    } else {
+                        arrowContainer.innerHTML = '<span>➡️</span>';
+                    }
+                    chainZone.appendChild(arrowContainer);
+                }
+            });
+            if (errorIndices.length === 0) {
+                statusBar.innerHTML = 'จำนวนการ์ดในสายโซ่ขณะนี้: ' + currentChain.length + ' / 31 ใบ';
+                statusBar.style.color = 'var(--text-color)';
+            }
+        }
+
+        document.getElementById('check-btn').addEventListener('click', () => {
+            if (currentChain.length === 0) {
+                statusBar.innerHTML = '❌ กรุณาวางการ์ดในสายโซ่อย่างน้อย 2 ใบเพื่อตรวจสอบ';
+                statusBar.style.color = 'var(--accent)'; 
+                return;
+            }
+            let errorIndices = []; 
+            let hasWrongConnection = false;
+            for (let i = 0; i < currentChain.length - 1; i++) {
+                if (relationships[currentChain[i].right] !== currentChain[i+1].left) { 
+                    errorIndices.push(i); 
+                    hasWrongConnection = true; 
+                }
+            }
+            if (hasWrongConnection) {
+                renderChain(errorIndices); 
+                statusBar.innerHTML = '❌ แย่จังตรวจพบจุดเชื่อมต่อผิดพลาดในสายโซ่ของคุณ! (สังเกตสัญลักษณ์สีแดง "ผิดตรงนี้!")';
+                statusBar.style.color = 'var(--accent)';
+            } else {
+                renderChain();
+                if (currentChain.length === masterCards.length) {
+                    statusBar.innerHTML = '🎉 ว้าวสุดยอดไปเลย! คุณเรียงลำดับสายโซ่ระบบต่อมไร้ท่อถูกต้องสมบูรณ์แบบครบทั้ง 31 ใบแล้ว!'; 
+                    statusBar.style.color = 'var(--success)';
+                    chainZone.querySelectorAll('.domino-card').forEach(el => el.classList.add('correct'));
+                } else {
+                    statusBar.innerHTML = '🔍 ยอดเยี่ยม! การ์ดทั้ง ' + currentChain.length + ' ใบที่คุณวางอยู่ตอนนี้ "เชื่อมต่อถูกต้องสัมพันธ์กันทั้งหมด" พยายามต่อเพิ่มให้ครบ!';
+                    statusBar.style.color = 'var(--info)';
+                }
+            }
+        });
+
+        // ระบบยืนยัน 2 ชั้นก่อนสุ่มใหม่ (Double Confirm) ป้องกันการกดพลาดอย่างละเอียด
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            const firstCheck = confirm("คุณต้องการล้างกระดานและเริ่มเกมใหม่ทั้งหมดใช่หรือไม่?");
+            if (firstCheck) {
+                const secondCheck = confirm("⚠️ การ์ดที่คุณต่อค้างไว้ทั้งหมดจะหายไปทันที ยืนยันที่จะเริ่มใหม่จริงๆ ใช่ไหม?");
+                if (secondCheck) {
+                    initGame();
+                }
+            }
+        });
+
+        window.onload = initGame;
     </script>
 </body>
 </html>
