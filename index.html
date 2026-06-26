@@ -60,7 +60,6 @@
             transform: scale(0.98);
         }
         
-        /* Layout */
         .game-container {
             max-width: 1300px;
             margin: 0 auto;
@@ -72,7 +71,6 @@
             font-size: 16px;
         }
 
-        /* Card Pool Area */
         .pool-zone {
             background: rgba(255,255,255,0.7);
             border: 2px dashed #bdc3c7;
@@ -85,7 +83,6 @@
             margin-bottom: 25px;
         }
 
-        /* Placement Action Bar */
         .placement-actions {
             text-align: center;
             background: #fff;
@@ -101,7 +98,6 @@
             color: var(--accent);
         }
 
-        /* Chain Placement Area */
         .chain-zone {
             background: #ffffff;
             border: 2px solid #34495e;
@@ -115,7 +111,6 @@
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
         }
 
-        /* Domino Card Style */
         .domino-card {
             background: var(--card-bg);
             border: 2px solid #bdc3c7;
@@ -189,7 +184,6 @@
             z-index: 2;
         }
 
-        /* Connection Arrow */
         .arrow-container {
             display: flex;
             flex-direction: column;
@@ -285,4 +279,225 @@
             { id: 18, left: "Adrenal Cortex", right: "Epinephrine" },
             { id: 10, left: "Adrenal Medulla", right: "Renin" },
             { id: 23, left: "Kidney", right: "Antidiuretic Hormone ADH" },
-            { id: 16, left
+            { id: 16, left: "Posterior Pituitary", right: "Gastrin" },
+            { id: 9, left: "Stomach", right: "TSH" },
+            { id: 22, left: "Anterior Pituitary", right: "Cortisol" },
+            { id: 31, left: "Adrenal Cortex", right: "Testosterone" },
+            { id: 28, left: "Testis", right: "Growth hormone" },
+            { id: 29, left: "Anterior Pituitary", right: "Insulin" },
+            { id: 19, left: "Pancreas", right: "FSH" },
+            { id: 25, left: "Anterior Pituitary", right: "Oxytocin" },
+            { id: 30, left: "Posterior Pituitary", right: "Aldosterone" }
+        ];
+
+        const relationships = {
+            "Estrogen": "Ovary",
+            "Erythropoietin": "Kidney",
+            "Mineralocorticoid": "Adrenal Cortex",
+            "Prolactin": "Anterior Pituitary",
+            "Triiodothyronine": "Thyroid Gland",
+            "Melatonin": "Pineal Gland",
+            "Secretin": "Small Intestine",
+            "Progesterone": "Ovary",
+            "TSH": "Anterior Pituitary",
+            "Renin": "Kidney",
+            "LH": "Anterior Pituitary",
+            "Parathormone": "Parathyroid Gland",
+            "HCG": "Placenta",
+            "Thyroxin": "Thyroid Gland",
+            "Nor Epinephrine": "Adrenal Medulla",
+            "Gastrin": "Stomach",
+            "Calcitonin": "Thyroid Gland",
+            "Epinephrine": "Adrenal Medulla",
+            "FSH": "Anterior Pituitary",
+            "Glucagon": "Pancreas",
+            "Glucocorticoid": "Adrenal Cortex",
+            "Cortisol": "Adrenal Cortex",
+            "Antidiuretic Hormone ADH": "Posterior Pituitary",
+            "Sex hormone": "Adrenal Cortex",
+            "Oxytocin": "Posterior Pituitary",
+            "ACTH": "Anterior Pituitary",
+            "Thymosin": "Thymus",
+            "Growth hormone": "Anterior Pituitary",
+            "Insulin": "Pancreas",
+            "Aldosterone": "Adrenal Cortex",
+            "Testosterone": "Testis"
+        };
+
+        let currentPool = [];
+        let currentChain = [];
+        let selectedCardData = null;
+
+        const poolZone = document.getElementById('pool-zone');
+        const chainZone = document.getElementById('chain-zone');
+        const statusBar = document.getElementById('status-bar');
+        const placementActions = document.getElementById('placement-actions');
+        const selectedCardInfo = document.getElementById('selected-card-info');
+
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function initGame() {
+            poolZone.innerHTML = '';
+            chainZone.innerHTML = '';
+            statusBar.innerHTML = 'เริ่มเกมแล้ว! เลือกการ์ดจากคลังไปจัดเรียงสายโซ่ได้เลย';
+            statusBar.style.color = 'var(--primary)';
+            currentChain = [];
+            hidePlacementActions();
+
+            currentPool = shuffle([...masterCards]);
+            currentPool.forEach(card => {
+                const cardEl = createCardElement(card, 'pool');
+                poolZone.appendChild(cardEl);
+            });
+        }
+
+        function createCardElement(card, zone) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'domino-card';
+            cardDiv.id = 'card-' + zone + '-' + card.id;
+            cardDiv.dataset.id = card.id;
+
+            cardDiv.innerHTML = '<div class="card-number">แผ่น ' + card.id + '</div>' +
+                                '<div class="card-half card-left">' + card.left + '</div>' +
+                                '<div class="card-half card-right">' + card.right + '</div>';
+
+            cardDiv.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleCardClick(card, zone);
+            });
+
+            return cardDiv;
+        }
+
+        function handleCardClick(card, zone) {
+            if (zone === 'pool') {
+                const oldSelected = poolZone.querySelector('.domino-card.selected');
+                if (oldSelected) oldSelected.classList.remove('selected');
+
+                selectedCardData = card;
+                const cardEl = document.getElementById('card-pool-' + card.id);
+                if (cardEl) cardEl.classList.add('selected');
+
+                selectedCardInfo.innerText = 'กำลังเลือก: แผ่นที่ ' + card.id + ' (' + card.left + ' / ' + card.right + ')';
+                placementActions.style.display = 'block';
+            } else if (zone === 'chain') {
+                const index = currentChain.findIndex(c => c.id === card.id);
+                if (index !== -1) {
+                    currentChain.splice(index, 1);
+                    currentPool.push(card);
+                    const newPoolCard = createCardElement(card, 'pool');
+                    poolZone.appendChild(newPoolCard);
+                    renderChain();
+                    hidePlacementActions();
+                }
+            }
+        }
+
+        function hidePlacementActions() {
+            selectedCardData = null;
+            placementActions.style.display = 'none';
+            const oldSelected = poolZone.querySelector('.domino-card.selected');
+            if (oldSelected) oldSelected.classList.remove('selected');
+        }
+
+        document.getElementById('btn-prepend').addEventListener('click', () => {
+            if (selectedCardData) {
+                currentChain.unshift(selectedCardData);
+                currentPool = currentPool.filter(c => c.id !== selectedCardData.id);
+                const poolEl = document.getElementById('card-pool-' + selectedCardData.id);
+                if (poolEl) poolEl.remove();
+                renderChain();
+                hidePlacementActions();
+            }
+        });
+
+        document.getElementById('btn-append').addEventListener('click', () => {
+            if (selectedCardData) {
+                currentChain.push(selectedCardData);
+                currentPool = currentPool.filter(c => c.id !== selectedCardData.id);
+                const poolEl = document.getElementById('card-pool-' + selectedCardData.id);
+                if (poolEl) poolEl.remove();
+                renderChain();
+                hidePlacementActions();
+            }
+        });
+
+        document.getElementById('btn-cancel').addEventListener('click', hidePlacementActions);
+
+        function renderChain(errorIndices = []) {
+            chainZone.innerHTML = '';
+            currentChain.forEach((card, index) => {
+                const cardEl = createCardElement(card, 'chain');
+                if (errorIndices.includes(index) || errorIndices.includes(index - 1)) {
+                    cardEl.classList.add('wrong-connection');
+                }
+                chainZone.appendChild(cardEl);
+
+                if (index < currentChain.length - 1) {
+                    const arrowContainer = document.createElement('div');
+                    arrowContainer.className = 'arrow-container';
+                    if (errorIndices.includes(index)) {
+                        arrowContainer.innerHTML = '<span style="color:var(--accent);">❌ ➡️</span><span class="arrow-error">ผิดตรงนี้!</span>';
+                    } else {
+                        arrowContainer.innerHTML = '<span>➡️</span>';
+                    }
+                    chainZone.appendChild(arrowContainer);
+                }
+            });
+
+            if (errorIndices.length === 0) {
+                statusBar.innerHTML = 'จำนวนการ์ดในสายโซ่ขณะนี้: ' + currentChain.length + ' / 31 ใบ';
+                statusBar.style.color = 'var(--primary)';
+            }
+        }
+
+        document.getElementById('check-btn').addEventListener('click', () => {
+            if (currentChain.length === 0) {
+                statusBar.innerHTML = '❌ กรุณาวางการ์ดในสายโซ่อย่างน้อย 2 ใบเพื่อเริ่มการตรวจสอบจุดผิดพลาด';
+                statusBar.style.color = 'var(--accent)';
+                return;
+            }
+
+            let errorIndices = [];
+            let hasWrongConnection = false;
+
+            for (let i = 0; i < currentChain.length - 1; i++) {
+                const currentRight = currentChain[i].right;
+                const nextLeft = currentChain[i+1].left;
+                if (relationships[currentRight] !== nextLeft) {
+                    errorIndices.push(i);
+                    hasWrongConnection = true;
+                }
+            }
+
+            if (hasWrongConnection) {
+                renderChain(errorIndices);
+                statusBar.innerHTML = '❌ ตรวจพบจุดเชื่อมต่อผิดพลาดในสายโซ่ของคุณ! (กรุณาสังเกตจุดที่มีลูกศรสีแดงและข้อความ "ผิดตรงนี้!" เพื่อทำการสลับหรือแก้ไข)';
+                statusBar.style.color = 'var(--accent)';
+            } else {
+                renderChain();
+                if (currentChain.length === masterCards.length) {
+                    statusBar.innerHTML = '🎉 สุดยอดมาก! คุณเรียงลำดับสายโซ่ระบบต่อมไร้ท่อถูกต้องสมบูรณ์แบบครบทั้ง 31 ใบแล้ว!';
+                    statusBar.style.color = 'var(--success)';
+                    const allChainCards = chainZone.querySelectorAll('.domino-card');
+                    allChainCards.forEach(el => el.classList.add('correct'));
+                } else {
+                    statusBar.innerHTML = '🔍 ยอดเยี่ยม! การ์ดทั้ง ' + currentChain.length + ' ใบที่คุณวางอยู่ตอนนี้ "เชื่อมต่อถูกต้องสัมพันธ์กันทั้งหมด" พยายามต่อเพิ่มให้ครบ 31 ใบเพื่อจบเกม!';
+                    statusBar.style.color = 'var(--info)';
+                }
+            }
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', initGame);
+        window.onload = initGame;
+    </script>
+</body>
+</html>
