@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>เกมต่อการ์ดระบบต่อมไร้ท่อ v2 (Theme Toggle Fixed)</title>
+    <title>เกมต่อการ์ดระบบต่อมไร้ท่อ v2 (100% Safe Tone)</title>
     <style>
-        /* ☀️ โหมดสว่าง (Light Mode) */
+        /* ☀️ โหมดสว่าง (Light Mode) - ค่าเริ่มต้น */
         :root {
             --primary: #2c3e50;
             --accent: #e74c3c;
@@ -50,12 +50,12 @@
             padding: 20px;
             color: var(--text-color);
             -webkit-tap-highlight-color: transparent;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.2s, color 0.2s;
         }
-        header { text-align: center; margin-bottom: 20px; position: relative; padding-top: 40px; }
+        header { text-align: center; margin-bottom: 20px; position: relative; padding-top: 45px; }
         h1 { margin: 0 0 10px 0; color: var(--text-color); font-size: 2rem; }
         
-        /* ปุ่มปรับโหมดธีม */
+        /* ปุ่มสลับโหมดธีม */
         .theme-toggle-btn {
             position: absolute;
             top: 0;
@@ -71,7 +71,6 @@
             box-shadow: 0 2px 5px var(--box-shadow);
             transition: all 0.2s;
         }
-        .theme-toggle-btn:hover { transform: scale(1.05); }
 
         .instructions {
             background: var(--card-bg); padding: 15px; border-radius: 8px;
@@ -80,19 +79,19 @@
         }
         .controls { text-align: center; margin-bottom: 20px; }
         
+        /* ปุ่มควบคุมหลัก */
         .controls button {
             background-color: #2c3e50; color: white; border: none;
             padding: 10px 20px; font-size: 15px; border-radius: 5px;
             cursor: pointer; transition: background 0.2s, transform 0.1s; margin: 5px;
         }
-        [data-theme="dark"] .controls button#reset-btn { background-color: #4a5568; }
         .controls button:hover { opacity: 0.9; }
         .controls button:active { transform: scale(0.98); }
         
         .game-container { max-width: 1300px; margin: 0 auto; }
         .section-title { font-weight: bold; margin: 15px 0 5px 0; font-size: 16px; }
 
-        /* พื้นที่แสดงผลการ์ด */
+        /* พื้นที่แสดงการ์ด */
         .pool-zone {
             background: var(--pool-bg); border: 2px dashed var(--border-color); border-radius: 10px;
             padding: 15px; min-height: 120px; display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;
@@ -108,7 +107,6 @@
             background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 6px;
             width: 175px; height: 75px; display: flex; flex-shrink: 0; cursor: pointer;
             user-select: none; box-shadow: 0 4px 6px var(--box-shadow); position: relative;
-            transition: transform 0.2s, box-shadow 0.2s;
         }
         .card-half {
             width: 50%; padding: 6px; display: flex; align-items: center; justify-content: center;
@@ -117,17 +115,18 @@
         .card-left { border-right: 1px dashed var(--border-color); background-color: var(--card-left-bg); color: var(--text-left); border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
         .card-right { background-color: var(--card-right-bg); color: var(--text-right); border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
 
-        /* ตัวเชื่อมต่อและสถานะ */
+        /* ลูกศรและข้อความผิดพลาด */
         .arrow-container { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 18px; color: #7f8c8d; user-select: none; flex-shrink: 0; }
         .arrow-error { color: var(--accent); font-size: 11px; font-weight: bold; margin-top: 2px; background: #fdf2f2; padding: 2px 4px; border-radius: 3px; border: 1px solid rgba(231, 76, 60, 0.2); white-space: nowrap; }
         [data-theme="dark"] .arrow-error { background: #3a1a1a; }
 
-        .domino-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px var(--box-shadow); }
+        /* สถานะพิเศษของการ์ด */
+        .domino-card:hover { transform: translateY(-3px); }
         .domino-card.selected { border-color: var(--accent); box-shadow: 0 0 10px rgba(231, 76, 60, 0.6); }
         .domino-card.correct { border-color: var(--success); background-color: rgba(46, 204, 113, 0.1); }
         .domino-card.wrong-connection { border-color: var(--accent); background-color: rgba(231, 76, 60, 0.1); }
         
-        /* แผงควบคุมตอนเลือกการ์ด */
+        /* ส่วนเลือกตำแหน่งวางการ์ด */
         .placement-actions { text-align: center; background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px var(--box-shadow); display: none; }
         .placement-actions span { font-weight: bold; margin-right: 15px; color: var(--accent); }
         .placement-btn-group { display: inline-block; }
@@ -135,14 +134,13 @@
         
         .status-bar { text-align: center; margin-top: 25px; padding: 15px; font-size: 16px; font-weight: bold; border-radius: 8px; background: var(--card-bg); box-shadow: 0 2px 5px var(--box-shadow); min-height: 24px; }
 
-        /* 📱 แสดงผลบนมือถือ */
+        /* 📱 จัดการหน้าจอมือถือ */
         @media (max-width: 767px) {
             body { padding: 10px; }
-            header { padding-top: 45px; }
+            header { padding-top: 50px; }
             h1 { font-size: 1.3rem; margin: 5px 0; }
             header p { font-size: 0.85rem; }
             .theme-toggle-btn { top: 0; right: 50%; transform: translateX(50%); padding: 6px 12px; font-size: 12px; }
-            .theme-toggle-btn:hover { transform: translateX(50%) scale(1.05); }
             .instructions { padding: 10px; font-size: 12px; margin-bottom: 12px; }
             .controls { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }
             .controls button { padding: 8px 12px; font-size: 13px; border-radius: 6px; flex: 1; max-width: 180px; margin: 0; }
@@ -262,23 +260,14 @@
         const selectedCardInfo = document.getElementById('selected-card-info');
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
 
-        // ระบบสลับโหมด Light / Dark (ดึงค่าจากความจำเครื่อง)
-        const currentTheme = localStorage.getItem('theme') || 'light';
-        if (currentTheme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            themeToggleBtn.innerText = '☀️ โหมดสว่าง';
-        }
-
+        // สลับโหมด Light / Dark แบบปลอดภัย ไม่ใช้ localStorage
         themeToggleBtn.addEventListener('click', () => {
-            let theme = document.documentElement.getAttribute('data-theme');
-            if (theme === 'dark') {
+            if (document.documentElement.hasAttribute('data-theme')) {
                 document.documentElement.removeAttribute('data-theme');
                 themeToggleBtn.innerText = '🌙 โหมดมืด';
-                localStorage.setItem('theme', 'light');
             } else {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 themeToggleBtn.innerText = '☀️ โหมดสว่าง';
-                localStorage.setItem('theme', 'dark');
             }
         });
 
@@ -321,4 +310,117 @@
         function handleCardClick(card, zone) {
             if (zone === 'pool') {
                 const oldSelected = poolZone.querySelector('.domino-card.selected');
-                if (oldSelected
+                if (oldSelected) oldSelected.classList.remove('selected');
+                
+                selectedCardData = card;
+                const targetCard = document.getElementById('card-pool-' + card.id);
+                if (targetCard) targetCard.classList.add('selected');
+                
+                selectedCardInfo.innerText = 'เลือกการ์ด: ' + card.left + ' / ' + card.right;
+                placementActions.style.display = 'block';
+            } else if (zone === 'chain') {
+                const index = currentChain.findIndex(c => c.id === card.id);
+                if (index !== -1) {
+                    currentChain.splice(index, 1); 
+                    currentPool.push(card);
+                    poolZone.appendChild(createCardElement(card, 'pool'));
+                    renderChain(); 
+                    hidePlacementActions();
+                }
+            }
+        }
+
+        function hidePlacementActions() {
+            selectedCardData = null; 
+            placementActions.style.display = 'none';
+            const oldSelected = poolZone.querySelector('.domino-card.selected');
+            if (oldSelected) oldSelected.classList.remove('selected');
+        }
+
+        document.getElementById('btn-prepend').addEventListener('click', () => {
+            if (selectedCardData) {
+                currentChain.unshift(selectedCardData); 
+                currentPool = currentPool.filter(c => c.id !== selectedCardData.id);
+                const el = document.getElementById('card-pool-' + selectedCardData.id);
+                if (el) el.remove();
+                renderChain(); 
+                hidePlacementActions();
+                chainZone.scrollLeft = 0;
+            }
+        });
+
+        document.getElementById('btn-append').addEventListener('click', () => {
+            if (selectedCardData) {
+                currentChain.push(selectedCardData); 
+                currentPool = currentPool.filter(c => c.id !== selectedCardData.id);
+                const el = document.getElementById('card-pool-' + selectedCardData.id);
+                if (el) el.remove();
+                renderChain(); 
+                hidePlacementActions();
+                chainZone.scrollLeft = chainZone.scrollWidth;
+            }
+        });
+
+        document.getElementById('btn-cancel').addEventListener('click', hidePlacementActions);
+
+        function renderChain(errorIndices = []) {
+            chainZone.innerHTML = '';
+            currentChain.forEach((card, index) => {
+                const cardEl = createCardElement(card, 'chain');
+                if (errorIndices.includes(index) || errorIndices.includes(index - 1)) {
+                    cardEl.classList.add('wrong-connection');
+                }
+                chainZone.appendChild(cardEl);
+                if (index < currentChain.length - 1) {
+                    const arrowContainer = document.createElement('div');
+                    arrowContainer.className = 'arrow-container';
+                    if (errorIndices.includes(index)) {
+                        arrowContainer.innerHTML = '<span>❌</span><span class="arrow-error">ผิดตรงนี้!</span>';
+                    } else {
+                        arrowContainer.innerHTML = '<span>➡️</span>';
+                    }
+                    chainZone.appendChild(arrowContainer);
+                }
+            });
+            if (errorIndices.length === 0) {
+                statusBar.innerHTML = 'จำนวนการ์ดในสายโซ่ขณะนี้: ' + currentChain.length + ' / 31 ใบ';
+                statusBar.style.color = 'var(--text-color)';
+            }
+        }
+
+        document.getElementById('check-btn').addEventListener('click', () => {
+            if (currentChain.length === 0) {
+                statusBar.innerHTML = '❌ กรุณาวางการ์ดในสายโซ่อย่างน้อย 2 ใบเพื่อตรวจสอบ';
+                statusBar.style.color = 'var(--accent)'; 
+                return;
+            }
+            let errorIndices = []; 
+            let hasWrongConnection = false;
+            for (let i = 0; i < currentChain.length - 1; i++) {
+                if (relationships[currentChain[i].right] !== currentChain[i+1].left) { 
+                    errorIndices.push(i); 
+                    hasWrongConnection = true; 
+                }
+            }
+            if (hasWrongConnection) {
+                renderChain(errorIndices); 
+                statusBar.innerHTML = '❌ ตรวจพบจุดเชื่อมต่อผิดพลาดในสายโซ่ของคุณ! (สังเกตสัญลักษณ์สีแดง "ผิดตรงนี้!")';
+                statusBar.style.color = 'var(--accent)';
+            } else {
+                renderChain();
+                if (currentChain.length === masterCards.length) {
+                    statusBar.innerHTML = '🎉 สุดยอดมาก! คุณเรียงลำดับสายโซ่ระบบต่อมไร้ท่อถูกต้องสมบูรณ์แบบครบทั้ง 31 ใบแล้ว!'; 
+                    statusBar.style.color = 'var(--success)';
+                    chainZone.querySelectorAll('.domino-card').forEach(el => el.classList.add('correct'));
+                } else {
+                    statusBar.innerHTML = '🔍 ยอดเยี่ยม! การ์ดทั้ง ' + currentChain.length + ' ใบที่คุณวางอยู่ตอนนี้ "เชื่อมต่อถูกต้องสัมพันธ์กันทั้งหมด" พยายามต่อเพิ่มให้ครบ!';
+                    statusBar.style.color = 'var(--info)';
+                }
+            }
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', initGame);
+        window.onload = initGame;
+    </script>
+</body>
+</html>
