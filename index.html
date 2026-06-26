@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>เกมต่อการ์ดระบบต่อมไร้ท่อ v2 (100% Fixed)</title>
+    <title>เกมต่อการ์ดระบบต่อมไร้ท่อ</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -114,13 +114,13 @@
     </header>
 
     <div class="instructions">
-        <strong>💡 คำแนะนำระบบแสดงผลอัจฉรียะ:</strong><br>
+        <strong>💡 คำแนะนำระบบแสดงผลอัจฉริยะ:</strong><br>
         - 💻 <strong>เล่นบนคอมพิวเตอร์ / iPad:</strong> การ์ดจะเรียงกระจายเต็มหน้าจอลงมาด้านล่างตามปกติ ช่วยให้เห็นภาพกว้างและเลือกกดง่าย<br>
         - 📱 <strong>เล่นบนมือถือ:</strong> การ์ดจะย่อขนาดและจัดเรียงเป็นแถวตรง สามารถใช้นิ้ว <strong>"ปัดซ้าย-ขวา"</strong> ที่กล่องเพื่อเลื่อนสไลด์ดูทั้งหมดได้ทันที
     </div>
 
     <div class="controls">
-        <button id="reset-btn">🔄 สุ่มการ์ดใหม่</button>
+        <button id="reset-btn">🔄 เริ่มเกมใหม่</button>
         <button id="check-btn" style="background-color: var(--success);">🔍 ตรวจสอบคำตอบ</button>
     </div>
 
@@ -336,12 +336,12 @@
             }
             if (hasWrongConnection) {
                 renderChain(errorIndices); 
-                statusBar.innerHTML = '❌ ตรวจพบจุดเชื่อมต่อผิดพลาดในสายโซ่ของคุณ! (สังเกตสัญลักษณ์สีแดง "ผิดตรงนี้!")';
+                statusBar.innerHTML = '❌ แย่จังตรวจพบจุดเชื่อมต่อผิดพลาดในสายโซ่ของคุณ! (สังเกตสัญลักษณ์สีแดง "ผิดตรงนี้!")';
                 statusBar.style.color = 'var(--accent)';
             } else {
                 renderChain();
                 if (currentChain.length === masterCards.length) {
-                    statusBar.innerHTML = '🎉 สุดยอดมาก! คุณเรียงลำดับสายโซ่ระบบต่อมไร้ท่อถูกต้องสมบูรณ์แบบครบทั้ง 31 ใบแล้ว!'; 
+                    statusBar.innerHTML = '🎉 ว้าวสุดยอดมาก! คุณเรียงลำดับสายโซ่ระบบต่อมไร้ท่อถูกต้องสมบูรณ์แบบครบทั้ง 31 ใบแล้ว!'; 
                     statusBar.style.color = 'var(--success)';
                     chainZone.querySelectorAll('.domino-card').forEach(el => el.classList.add('correct'));
                 } else {
