@@ -315,7 +315,7 @@
       <div class="results-score" id="finalScore">0 / 118</div>
       <div class="results-note" id="finalNote"></div>
       <div class="result-actions">
-        <button class="btn" id="retryBtn">เริ่มใหม่ (สลับลำดับ)</button>
+        <button class="btn" id="retryBtn">เริ่มใหม่ (สลับลำดับโจทย์)</button>
         <button class="btn ghost" id="reviewBtn">ดูข้อที่ตอบผิด</button>
       </div>
       <div class="mistakes" id="mistakesBox" style="display:none;">
@@ -325,11 +325,12 @@
     </div>
   </div>
 
-  <footer class="tip">เรียงลำดับใหม่แบบสุ่มทุกครั้งที่กด “เริ่มใหม่” · กด Enter/Space เพื่อเลือกด้วยคีย์บอร์ดได้</footer>
+  <footer class="tip">สุ่มลำดับโจทย์ใหม่ทุกครั้งที่กด “เริ่มใหม่” · ปุ่มตัวเลือกเรียงลำดับไฟลัมคงที่</footer>
 </div>
 
 <script>
-const PHYLA = ["Porifera","Coelenterata","Annelida","Nemahelminthes","Platyhelminthes","Mollusca","Arthropoda","Chordata","Echinodermata"];
+// เรียงลำดับตัวเลือกไฟลัมให้คงที่
+const PHYLA = ["Porifera","Coelenterata","Platyhelminthes","Nemahelminthes","Annelida","Arthropoda","Mollusca","Echinodermata","Chordata"];
 
 const DATA = [
   // 1. Phylum Porifera
@@ -530,7 +531,8 @@ function renderQuestion(){
 
   const choicesEl = document.getElementById('choices');
   choicesEl.innerHTML = '';
-  shuffle(PHYLA).forEach(p=>{
+  // ใช้ PHYLA ตรงๆ โดยไม่สุ่ม shuffle อีก เพื่อให้ปุ่มอยู่ที่เดิมเสมอ
+  PHYLA.forEach(p=>{
     const btn = document.createElement('button');
     btn.className = 'choice';
     btn.textContent = p;
