@@ -1,615 +1,400 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ห้องทดลองอนุกรมวิธาน — ทายไฟลัมของสัตว์</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#F2EAD3;
-    --bg-deep:#E7DCB8;
-    --card:#FFFBF1;
-    --ink:#20301F;
-    --ink-soft:#5C6650;
-    --line:#D6C79C;
-    --accent:#2E6B4A;
-    --accent-ink:#F2EAD3;
-    --stamp:#B0602A;
-    --correct:#3C8347;
-    --correct-bg:#E1F0DE;
-    --wrong:#B23A2A;
-    --wrong-bg:#FAE4DD;
-    --shadow: 0 18px 40px -20px rgba(32,48,31,0.35);
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:
-      radial-gradient(1200px 600px at 10% -10%, #FBF5E4 0%, transparent 60%),
-      radial-gradient(900px 500px at 110% 10%, #EFE2BC 0%, transparent 55%),
-      var(--bg);
-    color:var(--ink);
-    font-family:'Sarabun', sans-serif;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    padding:32px 16px 60px;
-  }
-  .wrap{ width:100%; max-width:720px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แนวข้อสอบปลายภาค วิชาเคมีเพิ่มเติม 4</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --primary: #1a365d;
+            --secondary: #2b6cb0;
+            --accent: #319795;
+            --bg-main: #f7fafc;
+            --card-bg: #ffffff;
+            --text-dark: #2d3748;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --correct-bg: #f0fff4;
+            --correct-border: #38a169;
+            --correct-text: #22543d;
+        }
 
-  /* header */
-  .eyebrow{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:12px;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:var(--stamp);
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:10px;
-  }
-  .eyebrow::before{
-    content:"";
-    width:26px; height:1px;
-    background:var(--stamp);
-    display:inline-block;
-  }
-  h1{
-    font-family:'Noto Serif Thai', serif;
-    font-weight:800;
-    font-size:clamp(28px,5vw,38px);
-    line-height:1.15;
-    margin:0 0 6px;
-  }
-  .sub{
-    color:var(--ink-soft);
-    font-size:15px;
-    margin:0 0 26px;
-    max-width:52ch;
-  }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
 
-  /* progress row */
-  .progress-row{
-    display:flex; align-items:center; gap:14px;
-    margin-bottom:22px;
-  }
-  .progress-track{
-    flex:1; height:8px; border-radius:99px;
-    background:var(--bg-deep);
-    overflow:hidden;
-    box-shadow: inset 0 0 0 1px var(--line);
-  }
-  .progress-fill{
-    height:100%; width:0%;
-    background:linear-gradient(90deg, var(--accent), #4C8A63);
-    border-radius:99px;
-    transition:width .35s ease;
-  }
-  .progress-label{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:13px;
-    color:var(--ink-soft);
-    white-space:nowrap;
-  }
-  .score-chip{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:13px;
-    background:var(--card);
-    border:1px solid var(--line);
-    padding:5px 12px;
-    border-radius:99px;
-    white-space:nowrap;
-    box-shadow: var(--shadow);
-  }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
 
-  /* specimen card */
-  .specimen{
-    position:relative;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:44px 28px 38px;
-    text-align:center;
-    box-shadow: var(--shadow);
-    margin-bottom:26px;
-    overflow:hidden;
-  }
-  .specimen::before, .specimen::after{
-    content:"";
-    position:absolute; left:20px; right:20px; height:1px;
-    background: repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 6px 12px);
-  }
-  .specimen::before{ top:16px; }
-  .specimen::after{ bottom:16px; }
-  .specimen-id{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:12px;
-    letter-spacing:.12em;
-    color:var(--ink-soft);
-    margin-bottom:18px;
-  }
-  .specimen-name{
-    font-family:'Noto Serif Thai', serif;
-    font-weight:700;
-    font-size:clamp(30px,7vw,44px);
-    line-height:1.2;
-    margin:6px 0 4px;
-    word-break:break-word;
-  }
-  .stamp{
-    position:absolute;
-    top:14px; right:18px;
-    width:58px; height:58px;
-    border-radius:50%;
-    border:2px solid var(--stamp);
-    color:var(--stamp);
-    display:flex; align-items:center; justify-content:center;
-    flex-direction:column;
-    font-family:'IBM Plex Mono', monospace;
-    font-size:10px;
-    transform:rotate(-8deg);
-    opacity:.85;
-    line-height:1.1;
-  }
-  .stamp b{ font-size:16px; }
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
 
-  /* choices */
-  .choices{
-    display:grid;
-    grid-template-columns:repeat(3, 1fr);
-    gap:10px;
-    margin-bottom:20px;
-  }
-  @media (max-width:560px){
-    .choices{ grid-template-columns:repeat(2, 1fr); }
-  }
-  .choice{
-    font-family:'Sarabun', sans-serif;
-    font-weight:600;
-    font-size:14px;
-    padding:14px 8px;
-    border-radius:10px;
-    border:1.5px solid var(--line);
-    background:var(--card);
-    color:var(--ink);
-    cursor:pointer;
-    transition:transform .12s ease, border-color .12s ease, background .12s ease;
-  }
-  .choice:hover:not(:disabled){
-    border-color:var(--accent);
-    transform:translateY(-2px);
-  }
-  .choice:disabled{ cursor:default; }
-  .choice.correct{
-    background:var(--correct-bg);
-    border-color:var(--correct);
-    color:var(--correct);
-  }
-  .choice.wrong{
-    background:var(--wrong-bg);
-    border-color:var(--wrong);
-    color:var(--wrong);
-  }
-  .choice.dim{ opacity:.5; }
+        h1 {
+            color: var(--primary);
+            font-size: 26px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
 
-  .feedback{
-    min-height:24px;
-    text-align:center;
-    font-size:14px;
-    font-weight:600;
-    margin-bottom:14px;
-  }
-  .feedback.correct{ color:var(--correct); }
-  .feedback.wrong{ color:var(--wrong); }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 16px;
+            margin-bottom: 0;
+        }
 
-  .actions{
-    display:flex; justify-content:center;
-  }
-  .btn{
-    font-family:'Sarabun', sans-serif;
-    font-weight:700;
-    font-size:15px;
-    padding:12px 26px;
-    border-radius:99px;
-    border:none;
-    cursor:pointer;
-    background:var(--accent);
-    color:var(--accent-ink);
-    box-shadow: var(--shadow);
-    transition:transform .12s ease, opacity .12s ease;
-  }
-  .btn:hover{ transform:translateY(-2px); }
-  .btn:focus-visible, .choice:focus-visible{
-    outline:3px solid var(--stamp);
-    outline-offset:2px;
-  }
-  .btn.ghost{
-    background:transparent;
-    color:var(--ink);
-    border:1.5px solid var(--line);
-    box-shadow:none;
-  }
+        .section-title {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
 
-  /* results */
-  .results{ display:none; }
-  .results.show{ display:block; }
-  .quiz-view.hide{ display:none; }
-  .results-card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:34px 28px;
-    box-shadow: var(--shadow);
-    text-align:center;
-    margin-bottom:20px;
-  }
-  .results-score{
-    font-family:'Noto Serif Thai', serif;
-    font-weight:800;
-    font-size:56px;
-    color:var(--accent);
-    margin:6px 0;
-  }
-  .results-note{ color:var(--ink-soft); font-size:14px; margin-bottom:18px; }
-  .mistakes{
-    text-align:left;
-    border-top:1px dashed var(--line);
-    padding-top:16px;
-    margin-top:16px;
-  }
-  .mistakes h3{
-    font-family:'Noto Serif Thai', serif;
-    font-size:17px;
-    margin:0 0 10px;
-  }
-  .mistake-row{
-    display:flex; justify-content:space-between; gap:12px;
-    font-size:14px;
-    padding:8px 0;
-    border-bottom:1px solid var(--line);
-  }
-  .mistake-row span:first-child{ font-weight:600; }
-  .mistake-row .given{ color:var(--wrong); }
-  .mistake-row .right{ color:var(--correct); }
-  .result-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+        .question-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            background-color: #fff;
+            transition: box-shadow 0.2s ease;
+        }
 
-  footer.tip{
-    text-align:center;
-    font-size:12px;
-    color:var(--ink-soft);
-    margin-top:30px;
-  }
-</style>
+        .question-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .question-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .options {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 15px;
+        }
+
+        .options li {
+            padding: 6px 12px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+        }
+
+        .explanation-box {
+            background-color: var(--correct-bg);
+            border-left: 4px solid var(--correct-border);
+            padding: 12px 16px;
+            border-radius: 0 6px 6px 0;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: var(--correct-text);
+            margin-bottom: 4px;
+        }
+
+        .explanation-text {
+            color: #276749;
+            margin: 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .question-card {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="wrap">
 
-  <div class="eyebrow">ห้องทดลองอนุกรมวิธาน · 9 ไฟลัม</div>
-  <h1>ทายไฟลัมของสิ่งมีชีวิต</h1>
-  <p class="sub">ดูชื่อสิ่งมีชีวิตบนบัตรตัวอย่าง แล้วเลือกไฟลัมที่ถูกต้องจากตัวเลือกด้านล่าง</p>
+<div class="container">
+    <header>
+        <h1>แนวข้อสอบปลายภาค วิชาเคมีเพิ่มเติม 4</h1>
+        <p class="subtitle">ระดับชั้นมัธยมศึกษาปีที่ 6 | จำนวน 30 ข้อ (ปรนัย 4 ตัวเลือก พร้อมเฉลยและคำอธิบาย)</p>
+    </header>
 
-  <div class="quiz-view" id="quizView">
-    <div class="progress-row">
-      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="progress-label" id="progressLabel">1 / 118</div>
-      <div class="score-chip" id="scoreChip">คะแนน 0</div>
+    <!-- หมวดที่ 1 -->
+    <div class="section-title">หมวดที่ 1: พอลิเมอร์และพลาสติก (ข้อ 1 - 15)</div>
+
+    <div class="question-card">
+        <div class="question-title">1. ข้อใดอธิบายความสัมพันธ์ระหว่างมอนอเมอร์และพอลิเมอร์ได้ถูกต้องที่สุด</div>
+        <ul class="options">
+            <li>ก. พอลิเมอร์เป็นสารโมเลกุลเล็กที่เกิดจากการรวมกันของมอนอเมอร์ด้วยพันธะไฮโดรเจน</li>
+            <li>ข. มอนอเมอร์เป็นหน่วยย่อยที่มีโมเลกุลขนาดใหญ่ รวมตัวกันเป็นพอลิเมอร์ด้วยพันธะโคเวเลนต์</li>
+            <li>ค. พอลิเมอร์เป็นสารโมเลกุลใหญ่ที่ประกอบด้วยหน่วยซ้ำ ๆ ของมอนอเมอร์เชื่อมต่อกันด้วยพันธะโคเวเลนต์</li>
+            <li>ง. มอนอเมอร์และพอลิเมอร์มีมวลโมเลกุลเท่ากันแต่มีสมบัติทางกายภาพแตกต่างกัน</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ค.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> พอลิเมอร์ (Polymer) คือสารโมเลกุลใหญ่ที่เกิดจากโมเลกุลขนาดเล็กที่เรียกว่า มอนอเมอร์ (Monomer) จำนวนมากมาเชื่อมต่อกันด้วยพันธะโคเวเลนต์ (Covalent bond)</p>
+        </div>
     </div>
 
-    <div class="specimen">
-      <div class="stamp"><span>No.</span><b id="specimenNo">001</b></div>
-      <div class="specimen-id" id="specimenTag">SPECIMEN · UNIDENTIFIED</div>
-      <div class="specimen-name" id="specimenName">—</div>
+    <div class="question-card">
+        <div class="question-title">2. ปฏิกิริยาพอลิเมอไรเซชันแบบเติม (Addition polymerization) แตกต่างจากแบบควบแน่น (Condensation polymerization) อย่างไร</div>
+        <ul class="options">
+            <li>ก. แบบเติมเกิดจากมอนอเมอร์ที่มีหมู่ฟังก์ชันอย่างน้อย 2 หมู่ ส่วนแบบควบแน่นเกิดจากมอนอเมอร์ที่มีพันธะคู่</li>
+            <li>ข. แบบเติมไม่มีโมเลกุลขนาดเล็กหลุดออกมา ส่วนแบบควบแน่นมีโมเลกุลขนาดเล็ก เช่น H<sub>2</sub>O หรือ HCl หลุดออกมา</li>
+            <li>ค. แบบเติมจะให้น้ำเป็นผลิตภัณฑ์พลอยได้เสมอ ส่วนแบบควบแน่นไม่เกิดผลิตภัณฑ์พลอยได้</li>
+            <li>ง. แบบเติมเกิดเฉพาะในธรรมชาติ ส่วนแบบควบแน่นเกิดเฉพาะในสังเคราะห์</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ข.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> พอลิเมอไรเซชันแบบเติมเกิดจากมอนอเมอร์ที่มีพันธะคู่ระหว่างอะตอมของคาร์บอน (C=C) ไม่ออกผลิตภัณฑ์พลอยได้ ส่วนแบบควบแน่นเกิดจากมอนอเมอร์ที่มีหมู่ฟังก์ชันอย่างน้อย 2 หมู่ทำปฏิกิริยากัน โดยมีโมเลกุลเล็ก ๆ เช่น น้ำ (H<sub>2</sub>O) หรือกรดไฮโดรคลอริก (HCl) หลุดออกมา</p>
+        </div>
     </div>
 
-    <div class="choices" id="choices"></div>
-    <div class="feedback" id="feedback"></div>
-    <div class="actions"><button class="btn" id="nextBtn" style="visibility:hidden;">ตัวอย่างถัดไป →</button></div>
-  </div>
-
-  <div class="results" id="results">
-    <div class="results-card">
-      <div class="specimen-id">สรุปผลการจำแนก</div>
-      <div class="results-score" id="finalScore">0 / 118</div>
-      <div class="results-note" id="finalNote"></div>
-      <div class="result-actions">
-        <button class="btn" id="retryBtn">เริ่มใหม่ (สลับลำดับโจทย์)</button>
-        <button class="btn ghost" id="reviewBtn">ดูข้อที่ตอบผิด</button>
-      </div>
-      <div class="mistakes" id="mistakesBox" style="display:none;">
-        <h3>รายการที่ตอบผิด</h3>
-        <div id="mistakesList"></div>
-      </div>
+    <div class="question-card">
+        <div class="question-title">3. พอลิเมอร์ในข้อใดเกิดจากปฏิกิริยาพอลิเมอไรเซชันแบบควบแน่นทั้งหมด</div>
+        <ul class="options">
+            <li>ก. พอลิเอทิลีน (PE), พอลิโพรพีลีน (PP), พอลิสไตรีน (PS)</li>
+            <li>ข. พอลิไวนิลคลอไรด์ (PVC), พอลิเตตราฟลูออโรเอทิลีน (Teflon), ยางธรรมชาติ</li>
+            <li>ค. ไนลอน 6,6 (Nylon 6,6), พอลิเอสเทอร์ (PET), เบเคไลต์ (Bakelite)</li>
+            <li>ง. พอลิบิวตาไดอีน, พอลิสไตรีน (PS), พอลิเอทิลีน (PE)</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ค.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> ไนลอน 6,6 (พอลิเอไมด์), PET (พอลิเอสเทอร์) และ เบเคไลต์ เกิดจากปฏิกิริยาแบบควบแน่นทั้งหมด ในขณะที่ PE, PP, PS, PVC, Teflon และยางธรรมชาติ เกิดจากปฏิกิริยาแบบเติม</p>
+        </div>
     </div>
-  </div>
 
-  <footer class="tip">สุ่มลำดับโจทย์ใหม่ทุกครั้งที่กด “เริ่มใหม่” · ปุ่มตัวเลือกเรียงลำดับไฟลัมคงที่</footer>
-</div>
+    <div class="question-card">
+        <div class="question-title">4. พลาสติกชนิดใดมีโครงสร้างแบบร่างแห (Cross-linked polymer) และมีสมบัติอย่างไร</div>
+        <ul class="options">
+            <li>ก. พอลิเอทิลีนชนิดความหนาแน่นต่ำ (LDPE) - อ่อนตัวง่าย ทนความร้อนต่ำ</li>
+            <li>ข. เบเคไลต์ (Bakelite) - แข็งแรง ไม่อ่อนตัวเมื่อได้รับความร้อน และขึ้นรูปใหม่ไม่ได้</li>
+            <li>ค. พอลิโพรพีลีน (PP) - เหนียว ยืดหยุ่นได้ดี หลอมเหลวและนำกลับมาใช้ใหม่ได้</li>
+            <li>ง. พอลิสไตรีน (PS) - เปราะ เป่าลมให้พองได้ หลอมเหลวได้ง่าย</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ข.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> เบเคไลต์ (Bakelite) มีโครงสร้างแบบร่างแห (Cross-linked structure) มีพันธะเชื่อมต่อกันระหว่างสายพอลิเมอร์แน่นหนา ทำให้มีความแข็ง ไม่อ่อนตัวเมื่อโดนความร้อน (เทอร์มอเซต) หากได้ความร้อนสูงจะไหม้และแตกอ้า</p>
+        </div>
+    </div>
 
-<script>
-// เรียงลำดับตัวเลือกไฟลัมให้คงที่
-const PHYLA = ["Porifera","Coelenterata","Platyhelminthes","Nemahelminthes","Annelida","Arthropoda","Mollusca","Echinodermata","Chordata"];
+    <div class="question-card">
+        <div class="question-title">5. ความสัมพันธ์ระหว่างโครงสร้างพอลิเมอร์กับสมบัติของพลาสติก ข้อใดถูกต้อง</div>
+        <ul class="options">
+            <li>ก. โครงสร้างแบบกิ่งมีความหนาแน่นสูงกว่าและจุดหลอมเหลวสูงกว่าโครงสร้างแบบเส้น</li>
+            <li>ข. โครงสร้างแบบเส้นมีความหนาแน่นสูงกว่าและใสกว่าโครงสร้างแบบกิ่ง</li>
+            <li>ค. โครงสร้างแบบร่างแหสามารถนำมาหลอมเพื่อขึ้นรูปใหม่ได้หลายครั้ง</li>
+            <li>ง. โครงสร้างแบบเส้นจัดเรียงตัวชิดกันได้ดี ทำให้มีความแข็งแรงและจุดหลอมเหลวสูงกว่าแบบกิ่ง</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ง.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> โครงสร้างแบบเส้นเรียงตัวชิดกันได้ดี ทำให้เกิดแรงยึดเหนี่ยวระหว่างโมเลกุลสูง จึงมีความหนาแน่น เหนียว และจุดหลอมเหลวสูงกว่าโครงสร้างแบบกิ่ง (ซึ่งมีกิ่งก้านขัดขวางไม่ให้สายพอลิเมอร์ชิดกันได้)</p>
+        </div>
+    </div>
 
-const DATA = [
-  // 1. Phylum Porifera
-  ["ฟองน้ำหินปูน","Porifera"],
-  ["ฟองน้ำถูตัว","Porifera"],
-  ["ฟองน้ำแก้ว","Porifera"],
+    <div class="question-card">
+        <div class="question-title">6. พลาสติกประเภทเทอร์มอพลาสติก (Thermoplastics) มีลักษณะสำคัญอย่างไร</div>
+        <ul class="options">
+            <li>ก. เมื่อได้รับความร้อนจะไหม้เกรียมเป็นเถ้าโดยไม่หลอมเหลว</li>
+            <li>ข. มีโครงสร้างแบบร่างแหยึดเหนี่ยวกันแน่นหนา</li>
+            <li>ค. เมื่อได้รับความร้อนจะอ่อนตัว และเมื่อเย็นลงจะแข็งตัว สามารถนำมารีไซเคิลได้</li>
+            <li>ง. ทนต่อความร้อนและความดันสูงได้ดีกว่าเทอร์มอเซต</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ค.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> เทอร์มอพลาสติก (Thermoplastics) มีโครงสร้างแบบเส้นหรือแบบกิ่ง เมื่อได้รับความร้อนจะอ่อนตัวและหลอมเหลว เมื่อเย็นลงจะแข็งตัวเหมือนเดิม จึงสามารถนำกลับมาหลอมขึ้นรูปใหม่ (รีไซเคิล) ได้หลายครั้ง</p>
+        </div>
+    </div>
 
-  // 2. Phylum Coelenterata (Cnidaria)
-  ["ไฮดรา","Coelenterata"],
-  ["ปะการัง","Coelenterata"],
-  ["กัลปังหา","Coelenterata"],
-  ["seaanemone(ดอกไม้ทะเล)","Coelenterata"],
-  ["ปากกาทะเล","Coelenterata"],
-  ["แมงกระพรุน","Coelenterata"],
-  ["โอบีเรีย","Coelenterata"],
+    <div class="question-card">
+        <div class="question-title">7. ในการทดสอบพลาสติกเพื่อจำแนกประเภท ข้อใดเป็นผลการทดสอบของพลาสติกประเภทเทอร์มอเซต</div>
+        <ul class="options">
+            <li>ก. เมื่อลอยน้ำ จะจมน้ำ และเมื่อเผาไฟจะหลอมเหลวเป็นหยด</li>
+            <li>ข. เมื่อได้รับความร้อนจะอ่อนตัว ยืดขยายได้ และมีกลิ่นฉุน</li>
+            <li>ค. เมื่อได้รับความร้อนจะไม่หลอมเหลว แต่จะไหม้เกรียมหรือแตกอ้า</li>
+            <li>ง. เมื่อใส่น้ำยาละลาย sơnเล็บ (อะซีโตน) จะละลายเป็นเนื้อเดียวทันที</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ค.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> พลาสติกเทอร์มอเซตมีโครงสร้างแบบร่างแห ไม่หลอมเหลวเมื่อได้รับความร้อน แต่จะทนความร้อนสูงจนถึงจุดหนึ่งแล้วไหม้เกรียมหรือแตกหลุดออก</p>
+        </div>
+    </div>
 
-  // 3. Phylum Platyhelminthes
-  ["พยาธิตัวตืด(Tapeworm)","Platyhelminthes"],
-  ["พยาธิใบไม้","Platyhelminthes"],
-  ["พลานาเรีย","Platyhelminthes"],
-  ["หนอนหัวขวาน","Platyhelminthes"],
-  ["Flatworm","Platyhelminthes"],
+    <div class="question-card">
+        <div class="question-title">8. สัญลักษณ์การรีไซเคิลหมายเลข 1 (PETE หรือ PET) และหมายเลข 2 (HDPE) มักนำไปใช้ทำผลิตภัณฑ์ใดตามลำดับ</div>
+        <ul class="options">
+            <li>ก. ขวดน้ำดื่มบรรจุเย็น / ขวดนม ถุงพลาสติกหนา</li>
+            <li>ข. ท่อน้ำประปา / จานชามเมลามีน</li>
+            <li>ค. ถุงร้อนใส่อาหาร / ถ้วยโยเกิร์ต</li>
+            <li>ง. กล่องโฟมบรรจุอาหาร / เสื้อกันฝน</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ก.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> หมายเลข 1 คือ PET (Polyethylene Terephthalate) นิยมใช้ทำขวดน้ำดื่มบรรจุเย็น/ขวดน้ำใส, หมายเลข 2 คือ HDPE (High-Density Polyethylene) นิยมใช้ทำขวดนม ถุงพลาสติกหนา/ถังน้ำ</p>
+        </div>
+    </div>
 
-  // 4. Phylum Nemahelminthes (Nematod)
-  ["หนอนในน้ำคร่ำ","Nemahelminthes"],
-  ["หนอนในน้ำส้มสายชู","Nemahelminthes"],
-  ["พยาธิโรคเท้าช้าง","Nemahelminthes"],
-  ["หนอนที่ลูกตา","Nemahelminthes"],
-  ["พยาธิตัวจี๊ด","Nemahelminthes"],
-  ["พยาธิไส้เดือน","Nemahelminthes"],
-  ["พยาธิปากขอ","Nemahelminthes"],
-  ["พยาธิเส้นเส้นด้าย","Nemahelminthes"],
-  ["พยาธิเข็มหมุด","Nemahelminthes"],
-  ["ไส้เดือนฝอย","Nemahelminthes"],
+    <div class="question-card">
+        <div class="question-title">9. การเติม "พลาสติไซเซอร์" (Plasticizer) ลงในพอลิเมอร์ เช่น PVC มีวัตถุประสงค์เพื่ออะไร</div>
+        <ul class="options">
+            <li>ก. เพิ่มจุดหลอมเหลวและทำให้พลาสติกแข็งแกร่งขึ้น</li>
+            <li>ข. แทรกระหว่างสายพอลิเมอร์เพื่อลดแรงยึดเหนี่ยว ทำให้พลาสติกมีความยืดหยุ่นและนุ่มลง</li>
+            <li>ค. ป้องกันการสลายตัวจากรังสี UV และทำให้พลาสติกไม่เปลี่ยนสี</li>
+            <li>ง. เพิ่มการยึดเกาะของสายพอลิเมอร์ให้เกิดโครงสร้างแบบร่างแห</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ข.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> พลาสติไซเซอร์ (Plasticizer) เป็นสารที่เพิ่มลงไปเพื่อลดแรงยึดเหนี่ยวระหว่างสายพอลิเมอร์ ทำให้พอลิเมอร์อ่อนตัว ยืดหยุ่น และดัดโค้งง่ายขึ้น เช่น การใส่พลาสติไซเซอร์ใน PVC เพื่อทำสายยางหรือหนังเทียม</p>
+        </div>
+    </div>
 
-  // 5. Phylum Annelida
-  ["ไส้เดือนดิน","Annelida"],
-  ["แม่เพรียง(ไส้เดือนทะเล)","Annelida"],
-  ["บุ้งทะเล","Annelida"],
-  ["หนอนดอกไม้","Annelida"],
-  ["ปลิงน้ำจืด","Annelida"],
-  ["ปลิงบกหรือทากดูดเลือด","Annelida"],
-  ["ตัวสงกราต์","Annelida"],
+    <div class="question-card">
+        <div class="question-title">10. กระบวนการวัลคาไนเซชัน (Vulcanization) ของยางธรรมชาติ ใช้สารใด และส่งผลต่อสมบัติยางอย่างไร</div>
+        <ul class="options">
+            <li>ก. ใช้คลอรีน; ทำให้ยางนุ่มลงและละลายในตัวทำละลายไดดีขึ้น</li>
+            <li>ข. ใช้กำมะถัน; เกิดพันธะข้ามเชื่อมระหว่างสายพอลิเมอร์ ทำให้ยางมีความยืดหยุ่นสูงขึ้น ทนความร้อนและสารเคมีได้ดีขึ้น</li>
+            <li>ค. ใช้น้ำตาล; ทำให้ยางย่อยสลายได้ง่ายตามธรรมชาติ</li>
+            <li>ง. ใช้กรดซัลฟิวริก; ทำให้ยางแข็งตัวเป็นพลาสติกเทอร์มอเซตทันที</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ข.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> วัลคาไนเซชัน (Vulcanization) คือกระบวนการปรับปรุงคุณภาพยางธรรมชาติโดยการเติม "กำมะถัน" และความร้อน เกิดอะตอมของกำมะถันสร้างพันธะข้ามเชื่อม (Sulfur cross-links) ระหว่างสายพอลิเมอร์ ส่งผลให้ยางมีความยืดหยุ่น ทนความร้อน และไม่ละลายในตัวทำละลายง่าย</p>
+        </div>
+    </div>
 
-  // 6. Phylum Arthropoda
-  ["กุ้ง","Arthropoda"],
-  ["กั้ง","Arthropoda"],
-  ["ปู","Arthropoda"],
-  ["กุ้งเต้น","Arthropoda"],
-  ["เพรียงหิน","Arthropoda"],
-  ["ตัวกะปิ","Arthropoda"],
-  ["จักจั่น","Arthropoda"],
-  ["ไรแดง","Arthropoda"],
-  ["ไรน้ำ","Arthropoda"],
-  ["เพรียงคอห่าน","Arthropoda"],
-  ["Coppepod","Arthropoda"],
-  ["เห็บ","Arthropoda"],
-  ["แมงมุม","Arthropoda"],
-  ["แมงป่อง","Arthropoda"],
-  ["ไรหิด","Arthropoda"],
-  ["บึ้ง","Arthropoda"],
-  ["ตะเข็บ","Arthropoda"],
-  ["ตะขาบ","Arthropoda"],
-  ["กิ้งกือ","Arthropoda"],
-  ["กระสุนพระอินทร์","Arthropoda"],
-  ["แมลง","Arthropoda"],
-  ["เหา","Arthropoda"],
-  ["หมัด","Arthropoda"],
-  ["มอด","Arthropoda"],
-  ["หิ่งห้อย","Arthropoda"],
-  ["แมลงดาหนา","Arthropoda"],
-  ["มวน","Arthropoda"],
-  ["แมลงปอ","Arthropoda"],
-  ["ริ้น","Arthropoda"],
-  ["แมลงช้าง","Arthropoda"],
-  ["ครั่ง","Arthropoda"],
-  ["เรือด","Arthropoda"],
-  ["เหลือบ","Arthropoda"],
-  ["แมงดาทะเล","Arthropoda"],
+    <div class="question-card">
+        <div class="question-title">11. หากปริมาณของกำมะถันที่ใช้ในกระบวนการวัลคาไนเซชันเพิ่มขึ้นอย่างมาก จะเกิดผลอย่างไรต่อยาง</div>
+        <ul class="options">
+            <li>ก. ยางจะเหนียวและเหลวเหมือนกาว</li>
+            <li>ข. ยางจะยืดหยุ่นได้ดีกว่าเดิมหลายเท่า</li>
+            <li>ค. ยางจะแข็ง ทรหด เปราะ ไม่ยืดหยุ่น (เช่น ยางแข็งหรือ ebonite)</li>
+            <li>ง. ยางจะคืนรูปไม่ได้เลยเมื่อถูกแรงกด</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ค.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> การเติมกำมะถันจำนวนมากเกินไปจะทำให้เกิดพันธะข้ามเชื่อมถี่มากเกินไป จนสายพอลิเมอร์เคลื่อนที่ไม่ได้ ทำให้ยางเปลี่ยนเป็นยางแข็ง ทรหด เปราะ ไม่ยืดหยุ่น เรียกว่า "เอโบไนต์" (Ebonite)</p>
+        </div>
+    </div>
 
-  // 7. Phylum Mollusca
-  ["ลิ่นทะเล","Mollusca"],
-  ["หมึก","Mollusca"],
-  ["หอยงวงช้าง","Mollusca"],
-  ["หอยงาช้าง","Mollusca"],
-  ["หอยโข่งทะเล(เป๋าฮื้อ)","Mollusca"],
-  ["หอยทาก","Mollusca"],
-  ["ทาก","Mollusca"],
-  ["หอยนางรม","Mollusca"],
-  ["หอยเสียบ","Mollusca"],
-  ["หอยมือเสือ","Mollusca"],
-  ["หอยเจาะหรือเพรียงน้ำเค็ม","Mollusca"],
+    <div class="question-card">
+        <div class="question-title">12. การดัดแปรโครงสร้างพอลิเมอร์โดยการทำ "กะพัดพอลิเมอร์" (Graft copolymerization) มีวัตถุประสงค์เพื่ออะไร</div>
+        <ul class="options">
+            <li>ก. กำจัดสารเจือปนในพอลิเมอร์</li>
+            <li>ข. ปรับปรุงสมบัติของพอลิเมอร์เดิมให้มีคุณสมบัติใหม่ตามต้องการ เช่น เพิ่มการดูดซับน้ำ หรือความทนทาน</li>
+            <li>ค. ลดมวลโมเลกุลของพอลิเมอร์ลงเพื่อให้ย่อยสลายเร็วขึ้น</li>
+            <li>ง. เปลี่ยนพอลิเมอร์แบบสังเคราะห์ให้กลายเป็นพอลิเมอร์ธรรมชาติ</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ข.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> การปรับเปลี่ยนโครงสร้างพอลิเมอร์ เช่น การทำ Graft copolymerization (กะพัดพอลิเมอร์) เป็นการสังเคราะห์กิ่งก้านของพอลิเมอร์อีกชนิดลงบนสายหลัก เพื่อปรับปรุงสมบัติทางกายภาพ/เคมีให้เหมาะกับการใช้งานเฉพาะด้าน</p>
+        </div>
+    </div>
 
-  // 8. Phylum Echinodermata
-  ["ปลิงทะเล","Echinodermata"],
-  ["ดาวทะเล","Echinodermata"],
-  ["ดาวเปราะ","Echinodermata"],
-  ["หอยเม่นหรือเม่นทะเล","Echinodermata"],
-  ["พลับพลึงทะเล","Echinodermata"],
-  ["อีแปะทะเล","Echinodermata"],
-  ["เหรียญทะเล","Echinodermata"],
+    <div class="question-card">
+        <div class="question-title">13. การจัดการขยะพลาสติกวิธีใดที่เป็นมิตรต่อสิ่งแวดล้อมและสอดคล้องกับหลักการเศรษฐกิจหมุนเวียน (Circular Economy) มากที่สุด</div>
+        <ul class="options">
+            <li>ก. การเผาขยะพลาสติกในที่แจ้งเพื่อลดปริมาตรขยะ</li>
+            <li>ข. การฝังกลบขยะพลาสติกทั้งหมดลงในดิน</li>
+            <li>ค. การนำพลาสติกกลับมารีไซเคิลและการลดการใช้พลาสติกแบบใช้ครั้งเดียวทิ้ง (Single-use plastics)</li>
+            <li>ง. การทิ้งขยะพลาสติกลงสู่ทะเลเพื่อให้จุลินทรีย์ในน้ำช่วยย่อยสลาย</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ค.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> การรีไซเคิล (Recycle) และการลดการใช้ (Reduce) สอดคล้องกับหลักการใช้ทรัพยากรให้คุ้มค่าที่สุดและหมุนเวียนกลับมาใช้ใหม่ ลดปริมาณขยะและผลกระทบต่อสิ่งแวดล้อม</p>
+        </div>
+    </div>
 
-  // 9. Phylum Chordata
-  ["เพรียงหัวหอม","Chordata"],
-  ["เพรียงลอย","Chordata"],
-  ["เพรียงสาย","Chordata"],
-  ["Amphioxus(Lancelet)","Chordata"],
-  ["ปลาปากกลม(hagfish, lamprey)","Chordata"],
-  ["ปลากระดูกอ่อน","Chordata"],
-  ["ฉลาม","Chordata"],
-  ["ฉนาก","Chordata"],
-  ["กระเบน","Chordata"],
-  ["ปลากระดูกแข็ง(ปลาทั่วไป)","Chordata"],
-  ["ปลาปักเป้า","Chordata"],
-  ["ปลาทู","Chordata"],
-  ["ม้าน้ำ","Chordata"],
-  ["เทาลาม","Chordata"],
-  ["ปลา มีปอด","Chordata"],
-  ["กบ","Chordata"],
-  ["เขียด","Chordata"],
-  ["คางคก","Chordata"],
-  ["อึ่งอ่าง","Chordata"],
-  ["จงโคร่ง","Chordata"],
-  ["งูดิน","Chordata"],
-  ["ซาลาแมนเดอร์","Chordata"],
-  ["ปาด","Chordata"],
-  ["หมาน้ำ","Chordata"],
-  ["เต่า","Chordata"],
-  ["งู","Chordata"],
-  ["จระเข้","Chordata"],
-  ["จิ๊กจก","Chordata"],
-  ["จิ้งเหลน","Chordata"],
-  ["ตุ๊กแก","Chordata"],
-  ["ตุ๊ดตู่","Chordata"],
-  ["กิ้งก่า","Chordata"],
-  ["กะพาน้ำ","Chordata"],
-  ["แพนกวิน","Chordata"],
-  ["นกกระจอกเทศ","Chordata"],
-  ["นก","Chordata"],
-  ["ไก่","Chordata"],
-  ["เป็ด","Chordata"],
-  ["ห่าน","Chordata"],
-  ["ตุ่นปากเปิด","Chordata"],
-  ["ตัวกินมดคล้ายเม่น","Chordata"],
-  ["จิ้งโจ้","Chordata"],
-  ["โอปอสซัม","Chordata"],
-  ["สุนัขแทสมาเนีย","Chordata"],
-  ["โคอะลา","Chordata"],
-  ["รกเจริญดี (ค้างคาว)","Chordata"],
-  ["วาฬ","Chordata"],
-  ["โลมา","Chordata"],
-  ["พยูน","Chordata"],
-  ["ลิง","Chordata"],
-  ["ช้าง","Chordata"],
-  ["ม้า","Chordata"],
-  ["กระทิง","Chordata"],
-  ["มนุษย์","Chordata"]
-];
+    <div class="question-card">
+        <div class="question-title">14. สารมอนอเมอร์ CH<sub>2</sub>=CH-Cl เมื่อผ่านปฏิกิริยาพอลิเมอไรเซชันจะได้พอลิเมอร์ชื่อว่าอะไร และเป็นปฏิกิริยาประเภทใด</div>
+        <ul class="options">
+            <li>ก. พอลิเอทิลีน (PE), ปฏิกิริยาแบบเติม</li>
+            <li>ข. พอลิไวนิลคลอไรด์ (PVC), ปฏิกิริยาแบบเติม</li>
+            <li>ค. พอลิเอสเทอร์ (PET), ปฏิกิริยาแบบควบแน่น</li>
+            <li>ง. พอลิโพรพีลีน (PP), ปฏิกิริยาแบบควบแน่น</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ข.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> มอนอเมอร์ CH<sub>2</sub>=CH-Cl คือ ไวนิลคลอไรด์ (Vinyl chloride) มีพันธะคู่ C=C เมื่อผ่านปฏิกิริยาพอลิเมอไรเซชันแบบเติม จะได้ พอลิไวนิลคลอไรด์ (PVC)</p>
+        </div>
+    </div>
 
-let order = [];
-let idx = 0;
-let score = 0;
-let mistakes = [];
-let locked = false;
+    <div class="question-card">
+        <div class="question-title">15. ข้อใดกล่าวถูกต้องเกี่ยวกับพอลิเมอร์ชีวภาพ (Biopolymers)</div>
+        <ul class="options">
+            <li>ก. เป็นพอลิเมอร์ที่สังเคราะห์มาจากปิโตรเลียมแต่สามารถย่อยสลายได้</li>
+            <li>ข. เป็นพอลิเมอร์ที่พบในสิ่งมีชีวิต หรือสังเคราะห์จากวัตถุดิบธรรมชาติ เช่น PLA ซึ่งย่อยสลายได้ตามธรรมชาติ</li>
+            <li>ค. เป็นพลาสติกที่ไม่สามารถย่อยสลายได้ แต่มีความคงทนสูงมาก</li>
+            <li>ง. เกิดจากปฏิกิริยาพอลิเมอไรเซชันแบบเติมเท่านั้น</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ข.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> พอลิเมอร์ชีวภาพ (Biopolymers) เช่น PLA (Polylactic acid) สังเคราะห์จากพืช (เช่น ข้าวโพด อ้อย) หรือพบในสิ่งมีชีวิต สามารถย่อยสลายได้ตามธรรมชาติด้วยจุลินทรีย์</p>
+        </div>
+    </div>
 
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
-  }
-  return a;
-}
+    <!-- หมวดที่ 2 -->
+    <div class="section-title">หมวดที่ 2: กระบวนการทางวิทยาศาสตร์ (ข้อ 16 - 19)</div>
 
-function start(){
-  order = shuffle(DATA.map((_,i)=>i));
-  idx = 0; score = 0; mistakes = [];
-  document.getElementById('results').classList.remove('show');
-  document.getElementById('quizView').classList.remove('hide');
-  document.getElementById('mistakesBox').style.display = 'none';
-  renderQuestion();
-}
+    <div class="question-card">
+        <div class="question-title">16. ข้อใดเรียงลำดับขั้นตอนของวิธีการทางวิทยาศาสตร์ได้ถูกต้อง</div>
+        <ul class="options">
+            <li>ก. การตั้งสมมติฐาน &rarr; การสังเกตและระบุปัญหา &rarr; การทดลอง &rarr; การวิเคราะห์ข้อมูล &rarr; การสรุปผล</li>
+            <li>ข. การสังเกตและระบุปัญหา &rarr; การตั้งสมมติฐาน &rarr; การออกแบบและการทดลอง &rarr; การวิเคราะห์ข้อมูล &rarr; การสรุปผล</li>
+            <li>ค. การตั้งปัญหา &rarr; การสรุปผล &rarr; การตั้งสมมติฐาน &rarr; การทดลอง &rarr; การรวบรวมข้อมูล</li>
+            <li>ง. การทดลอง &rarr; การสังเกต &rarr; การตั้งสมมติฐาน &rarr; การรวบรวมข้อมูล &rarr; การสรุปผล</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ข.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> ลำดับขั้นตอนของวิธีการทางวิทยาศาสตร์ที่ถูกต้องเริ่มจาก การสังเกตและระบุปัญหา &rarr; การตั้งสมมติฐาน &rarr; การออกแบบและการทดลอง &rarr; การวิเคราะห์ข้อมูล &rarr; การสรุปผล</p>
+        </div>
+    </div>
 
-function renderQuestion(){
-  locked = false;
-  const total = order.length;
-  const [name, correct] = DATA[order[idx]];
-
-  document.getElementById('progressLabel').textContent = `${idx+1} / ${total}`;
-  document.getElementById('progressFill').style.width = `${(idx/total)*100}%`;
-  document.getElementById('scoreChip').textContent = `คะแนน ${score}`;
-  document.getElementById('specimenNo').textContent = String(idx+1).padStart(3,'0');
-  document.getElementById('specimenTag').textContent = 'SPECIMEN · UNIDENTIFIED';
-  document.getElementById('specimenName').textContent = name;
-  document.getElementById('feedback').textContent = '';
-  document.getElementById('feedback').className = 'feedback';
-  document.getElementById('nextBtn').style.visibility = 'hidden';
-
-  const choicesEl = document.getElementById('choices');
-  choicesEl.innerHTML = '';
-  // ใช้ PHYLA ตรงๆ โดยไม่สุ่ม shuffle อีก เพื่อให้ปุ่มอยู่ที่เดิมเสมอ
-  PHYLA.forEach(p=>{
-    const btn = document.createElement('button');
-    btn.className = 'choice';
-    btn.textContent = p;
-    btn.addEventListener('click', ()=>answer(p, correct, btn));
-    choicesEl.appendChild(btn);
-  });
-}
-
-function answer(picked, correct, btnEl){
-  if(locked) return;
-  locked = true;
-  const feedback = document.getElementById('feedback');
-  const allBtns = document.querySelectorAll('.choice');
-
-  allBtns.forEach(b=>{
-    b.disabled = true;
-    if(b.textContent === correct) b.classList.add('correct');
-    else b.classList.add('dim');
-  });
-
-  if(picked === correct){
-    score++;
-    feedback.textContent = 'ถูกต้อง!';
-    feedback.className = 'feedback correct';
-  } else {
-    btnEl.classList.remove('dim');
-    btnEl.classList.add('wrong');
-    feedback.textContent = `ไม่ถูกต้อง — คำตอบคือ ${correct}`;
-    feedback.className = 'feedback wrong';
-    mistakes.push({name: DATA[order[idx]][0], given: picked, correct});
-  }
-
-  document.getElementById('scoreChip').textContent = `คะแนน ${score}`;
-  const nextBtn = document.getElementById('nextBtn');
-  nextBtn.style.visibility = 'visible';
-  nextBtn.textContent = (idx === order.length-1) ? 'ดูผลสรุป →' : 'ตัวอย่างถัดไป →';
-}
-
-document.getElementById('nextBtn').addEventListener('click', ()=>{
-  if(!locked) return;
-  idx++;
-  if(idx >= order.length){
-    finish();
-  } else {
-    renderQuestion();
-  }
-});
-
-function finish(){
-  document.getElementById('progressFill').style.width = '100%';
-  document.getElementById('quizView').classList.add('hide');
-  document.getElementById('results').classList.add('show');
-  document.getElementById('finalScore').textContent = `${score} / ${order.length}`;
-  const pct = Math.round((score/order.length)*100);
-  document.getElementById('finalNote').textContent = `ตอบถูก ${pct}% ของตัวอย่างทั้งหมด`;
-
-  const list = document.getElementById('mistakesList');
-  list.innerHTML = '';
-  if(mistakes.length === 0){
-    list.innerHTML = '<p style="color:var(--ink-soft); font-size:14px;">ไม่มีข้อผิด เก่งมาก!</p>';
-  } else {
-    mistakes.forEach(m=>{
-      const row = document.createElement('div');
-      row.className = 'mistake-row';
-      row.innerHTML = `<span>${m.name}</span><span><span class="given">${m.given}</span> → <span class="right">${m.correct}</span></span>`;
-      list.appendChild(row);
-    });
-  }
-}
-
-document.getElementById('retryBtn').addEventListener('click', start);
-document.getElementById('reviewBtn').addEventListener('click', ()=>{
-  const box = document.getElementById('mistakesBox');
-  box.style.display = box.style.display === 'none' ? 'block' : 'none';
-});
-
-start();
-</script>
-</body>
-</html>
+    <div class="question-card">
+        <div class="question-title">17. นักเรียนคนหนึ่งต้องการศึกษาว่า "ปริมาณกำมะถันมีผลต่อความยืดหยุ่นของยางสังเคราะห์หรือไม่" สิ่งใดคือ "ตัวแปรต้น" และ "ตัวแปรตาม" ตามลำดับ</div>
+        <ul class="options">
+            <li>ก. ความยืดหยุ่นของยาง / ปริมาณกำมะถัน</li>
+            <li>ข. ปริมาณกำมะถัน / ความยืดหยุ่นของยาง</li>
+            <li>ค. ชนิดของยางสังเคราะห์ / อุณหภูมิที่ใช้หลอม</li>
+            <li>ง. เวลาที่ใช้ในการทดลอง / ปริมาณกำมะถัน</li>
+        </ul>
+        <div class="explanation-box">
+            <div class="explanation-title">เฉลย ข้อ ข.</div>
+            <p class="explanation-text"><strong>คำอธิบาย:</strong> ตัวแปรต้น (สิ่งที่ต้องการศึกษา/สิ่งที่เป็นสาเหตุ) คือ ปริมาณกำมะถัน; ตัวแปรตาม (ผลที่เกิดจากตัวแปรต้น) คือ ความยืดหยุ่นของยาง</p>
+ 
